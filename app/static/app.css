@@ -318,7 +318,7 @@ legend { padding:0; }
 .signals-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px 12px; }
 .signal-name-row { display:flex; justify-content:space-between; gap:6px; font:10px var(--font-mono); color:var(--paper-muted); margin-bottom:5px; }
 .signal-bar-track { height:3px; background:var(--border-muted); border-radius:3px; overflow:hidden; }
-.signal-bar-fill { height:100%; background:var(--verdigris); }
+.signal-bar-fill { height:100%; background:var(--paper-dim); }
 .signal-bar-fill.high { background:var(--blood); }
 .checks-stages-stack { display:flex; flex-direction:column; gap:8px; }
 .stage-group { border:1px solid var(--border-muted); border-radius:var(--radius); overflow:hidden; background:var(--ink-base); }
@@ -564,3 +564,21 @@ legend { padding:0; }
 @media (max-width:1100px) { .network-layout { flex-direction:column; } .network-rail { width:100%; max-height:none; } .net-zoom { margin-left:0; } }
 @media (max-width:650px) { .net-search { width:100%; } .net-select { flex:1; min-width:0; } }
 .net-node.dim:hover { opacity:.95; }
+
+/* trade-loop graphs (finance view and sandbox): circles and arrows, details on hover */
+.rg { display:block; }
+.rg-edge { stroke:var(--paper-dim); stroke-width:1.8; fill:none; opacity:.8; transition:stroke-width .15s,opacity .15s; }
+.rg-edge.flagged { stroke:var(--blood); opacity:.9; }
+.rg-edge:hover { stroke-width:3.4; opacity:1; }
+.rg-arrow { fill:var(--paper-dim); }
+.rg-arrow.flagged { fill:var(--blood); }
+.rg-bridge { stroke:var(--seal); stroke-width:1.6; stroke-dasharray:5 4; fill:none; opacity:.8; }
+.rg-bridge:hover { stroke-width:3; opacity:1; }
+.rg-node { cursor:default; }
+.rg-dot { fill:var(--ink-base); stroke:var(--seal); stroke-width:2; transform-box:fill-box; transform-origin:center; transition:transform .16s var(--ease-out),filter .16s; }
+.rg-node.alert .rg-dot { stroke:var(--blood); }
+.rg-node:hover .rg-dot { transform:scale(1.2); filter:drop-shadow(0 0 7px rgba(201,162,39,.6)); }
+.rg-node.alert:hover .rg-dot { filter:drop-shadow(0 0 7px rgba(214,90,90,.6)); }
+.rg-id { font:600 10px var(--font-mono); fill:var(--paper); pointer-events:none; }
+.rg-kept { font:500 10.5px var(--font-sans); fill:var(--paper-muted); pointer-events:none; }
+.rg-node.alert .rg-kept { fill:var(--blood); }

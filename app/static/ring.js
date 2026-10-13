@@ -278,196 +278,69 @@
       return;
     }
 
+    // Quiet by design: circles and arrows only. Names, amounts and links appear on hover, not on the page.
     var width = 620;
-    var height = 285;
+    var height = 270;
     var cx = width / 2;
-    var cy = height / 2 + 4;
-    var radius = nodes.length === 2 ? 155 : 104;
+    var cy = height / 2 - 6;
+    var radius = nodes.length === 2 ? 170 : 92;
+    var flaggedLoop = !ringGraph || ringGraph.tier !== "low";
 
     var svg = svgEl("svg", {
       viewBox: "0 0 " + width + " " + height,
       width: "100%",
-      height: "285",
+      height: String(height),
       role: "img",
-      "aria-label": "Supply chain ring graph with invoice hops and corporate bridges",
+      "aria-label": "Trade loop between " + nodes.length + " firms. Hover a firm or a line for details.",
+      class: "rg",
     });
 
     var markerPrefix = container.id || "network";
-    // Arrowhead markers
-    var defs = svgEl("defs", {}, [
-      svgEl("marker", {
-        id: markerPrefix + "-invoice",
-        viewBox: "0 0 10 10",
-        refX: "9",
-        refY: "5",
-        markerWidth: "6",
-        markerHeight: "6",
-        orient: "auto-start-reverse",
-      }, [
-        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#5F9179" }),
+    svg.appendChild(svgEl("defs", {}, [
+      svgEl("marker", { id: markerPrefix + "-arrow", viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "6", markerHeight: "6", orient: "auto-start-reverse" }, [
+        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", class: flaggedLoop ? "rg-arrow flagged" : "rg-arrow" }),
       ]),
-      svgEl("marker", {
-        id: markerPrefix + "-bridge",
-        viewBox: "0 0 10 10",
-        refX: "9",
-        refY: "5",
-        markerWidth: "6",
-        markerHeight: "6",
-        orient: "auto-start-reverse",
-      }, [
-        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#C8912F" }),
-      ]),
-    ]);
-    svg.appendChild(defs);
+    ]));
 
     var coords = {};
     nodes.forEach(function (n, idx) {
       var angle = -Math.PI / 2 + (2 * Math.PI * idx) / nodes.length;
-      if (nodes.length === 2) {
-        angle = idx === 0 ? Math.PI : 0;
-      }
-      coords[n.id] = {
-        x: Math.round(cx + radius * Math.cos(angle)),
-        y: Math.round(cy + radius * Math.sin(angle)),
-        node: n,
-      };
+      if (nodes.length === 2) angle = idx === 0 ? Math.PI : 0;
+      coords[n.id] = { x: Math.round(cx + radius * Math.cos(angle)), y: Math.round(cy + radius * Math.sin(angle)), node: n };
     });
 
-    // Draw invoice edges (solid arrows)
+    function tip(node, text) { var t = svgEl("title", {}); t.textContent = text; node.appendChild(t); return node; }
+
     edges.forEach(function (edge) {
-      var p1 = coords[edge.from];
-      var p2 = coords[edge.to];
+      var p1 = coords[edge.from], p2 = coords[edge.to];
       if (!p1 || !p2) return;
-      var dx = p2.x - p1.x;
-      var dy = p2.y - p1.y;
-      var dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      var padStart = 28;
-      var padEnd = 32;
-      var x1 = Math.round(p1.x + (dx / dist) * padStart);
-      var y1 = Math.round(p1.y + (dy / dist) * padStart);
-      var x2 = Math.round(p2.x - (dx / dist) * padEnd);
-      var y2 = Math.round(p2.y - (dy / dist) * padEnd);
-
-      svg.appendChild(
-        svgEl("line", {
-          x1: x1,
-          y1: y1,
-          x2: x2,
-          y2: y2,
-          stroke: "#5F9179",
-          "stroke-width": "2.2",
-          "marker-end": "url(#" + markerPrefix + "-invoice)",
-        })
-      );
-
-      var mx = Math.round((x1 + x2) / 2);
-      var my = Math.round((y1 + y2) / 2);
-      svg.appendChild(
-        svgEl("text", {
-          x: mx,
-          y: my - 5,
-          fill: "#9A8F7E",
-          "font-size": "10",
-          "font-family": "monospace",
-          "text-anchor": "middle",
-          text: (edge.formatted_amount || formatInr(edge.amount_paise)) + " (" + (edge.hsn || "") + ")",
-        })
-      );
+      var dx = p2.x - p1.x, dy = p2.y - p1.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      var line = svgEl("line", {
+        x1: Math.round(p1.x + (dx / dist) * 26), y1: Math.round(p1.y + (dy / dist) * 26),
+        x2: Math.round(p2.x - (dx / dist) * 30), y2: Math.round(p2.y - (dy / dist) * 30),
+        class: "rg-edge" + (flaggedLoop ? " flagged" : ""), "marker-end": "url(#" + markerPrefix + "-arrow)",
+      });
+      svg.appendChild(tip(line, p1.node.id + " invoiced " + p2.node.id + ": " + (edge.formatted_amount || formatInr(edge.amount_paise)) + (edge.hsn ? " (HSN " + edge.hsn + ")" : "")));
     });
 
-    // Draw corporate bridges (dashed orange curves with link labels)
     bridges.forEach(function (bridge) {
-      var b1 = coords[bridge.from];
-      var b2 = coords[bridge.to];
+      var b1 = coords[bridge.from], b2 = coords[bridge.to];
       if (!b1 || !b2) return;
-      var midX = Math.round((b1.x + b2.x) / 2);
-      var midY = Math.round((b1.y + b2.y) / 2) - 42;
-      var pathD = "M " + b1.x + " " + b1.y + " Q " + midX + " " + midY + " " + b2.x + " " + b2.y;
-      svg.appendChild(
-        svgEl("path", {
-          d: pathD,
-          fill: "none",
-          stroke: "#C8912F",
-          "stroke-width": "2.4",
-          "stroke-dasharray": "6,4",
-          "marker-end": "url(#" + markerPrefix + "-bridge)",
-        })
-      );
-      svg.appendChild(
-        svgEl("text", {
-          x: midX,
-          y: midY + 8,
-          fill: "#C8912F",
-          "font-size": "10.5",
-          "font-weight": "bold",
-          "text-anchor": "middle",
-          text: "BRIDGE: " + (bridge.label || "Shared Director + Bank Hash"),
-        })
-      );
+      var mx = Math.round((b1.x + b2.x) / 2), my = Math.round((b1.y + b2.y) / 2) - 34;
+      var path = svgEl("path", { d: "M " + b1.x + " " + b1.y + " Q " + mx + " " + my + " " + b2.x + " " + b2.y, class: "rg-bridge" });
+      svg.appendChild(tip(path, b1.node.id + " and " + b2.node.id + " are related: " + ((bridge.links || []).join("; ") || bridge.label || "shared details")));
     });
 
-    // Draw firm nodes and retained % badges
     nodes.forEach(function (n) {
       var pt = coords[n.id];
-      var g = svgEl("g", { transform: "translate(" + pt.x + "," + pt.y + ")" });
-
-      var isAlert = Number(n.retained_pct) < 2.0;
-      g.appendChild(
-        svgEl("circle", {
-          r: "24",
-          fill: "#1D1813",
-          stroke: isAlert ? "#D65A5A" : "#C9A227",
-          "stroke-width": "2.5",
-        })
-      );
-      g.appendChild(
-        svgEl("text", {
-          x: "0",
-          y: "-2",
-          fill: "#EFE7D8",
-          "font-size": "10.5",
-          "font-weight": "bold",
-          "text-anchor": "middle",
-          text: n.id,
-        })
-      );
-      g.appendChild(
-        svgEl("text", {
-          x: "0",
-          y: "11",
-          fill: "#9A8F7E",
-          "font-size": "9",
-          "text-anchor": "middle",
-          text: n.city || "",
-        })
-      );
-
-      // Retained % badge pill below node
-      g.appendChild(
-        svgEl("rect", {
-          x: "-42",
-          y: "27",
-          width: "84",
-          height: "16",
-          rx: "4",
-          fill: isAlert ? "#2A1A16" : "#241E12",
-          stroke: isAlert ? "#D65A5A" : "#C9A227",
-          "stroke-width": "1",
-        })
-      );
-      g.appendChild(
-        svgEl("text", {
-          x: "0",
-          y: "38",
-          fill: isAlert ? "#E58A8A" : "#E6C879",
-          "font-size": "9.5",
-          "font-family": "monospace",
-          "text-anchor": "middle",
-          text: String(n.retained_pct !== undefined ? n.retained_pct : 1.0) + "% retained",
-        })
-      );
-
-      svg.appendChild(g);
+      var alert = flaggedLoop && Number(n.retained_pct) < 2.0;
+      var g = svgEl("g", { transform: "translate(" + pt.x + "," + pt.y + ")", class: "rg-node" + (alert ? " alert" : "") });
+      g.appendChild(svgEl("circle", { r: "22", class: "rg-dot" }));
+      var id = svgEl("text", { y: "4", "text-anchor": "middle", class: "rg-id" }); id.textContent = n.id; g.appendChild(id);
+      if (n.retained_pct !== undefined) {
+        var kept = svgEl("text", { y: "40", "text-anchor": "middle", class: "rg-kept" }); kept.textContent = n.retained_pct + "% kept"; g.appendChild(kept);
+      }
+      svg.appendChild(tip(g, (n.label || n.id) + (n.city ? " · " + n.city : "") + (n.retained_pct !== undefined ? "\nKeeps " + n.retained_pct + "% of the value passing through" : "")));
     });
 
     container.appendChild(svg);
@@ -485,7 +358,7 @@
           ]),
           el("div", { className: "signal-bar-track" }, [
             el("div", {
-              className: "signal-bar-fill" + (val >= 0.65 ? " high" : ""),
+              className: "signal-bar-fill" + (val >= 0.85 ? " high" : ""),
               style: "width:" + pct + "%",
             }),
           ]),
