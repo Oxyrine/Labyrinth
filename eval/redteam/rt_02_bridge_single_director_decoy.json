@@ -1,0 +1,307 @@
+{
+  "case_id": "rt_02_bridge_single_director_decoy",
+  "case_type": "clean_goods",
+  "checks": [
+    {
+      "check": "network.ring",
+      "details": {
+        "independent_corporate_links": 1,
+        "min_required_links": 2,
+        "shared_directors": [
+          "DIN-07770001"
+        ]
+      },
+      "evidence": [
+        "Counterparties P-RT02-A and P-RT02-B share only 1 independent corporate attribute (director DIN-07770001 < 2 required for bridge closure); no synthetic related-party ring closed."
+      ],
+      "evidence_weight": 1.0,
+      "refs": [
+        "INV-RT02-0001"
+      ],
+      "schema_version": 1,
+      "severity": "info",
+      "source": "live",
+      "status": "pass",
+      "verification_status": "independently_confirmed"
+    }
+  ],
+  "description": "Two independent Bengaluru manufacturers share a single non-executive director (DIN-07770001) without shared PAN, bank account, or address; tests that single-link corporate bridges do not trigger false-positive ring closure.",
+  "evidence": [
+    {
+      "buyer_id": "P-RT02-B",
+      "contract_id": "D-CNT-RT02",
+      "doc_date": "2026-08-01",
+      "doc_id": "D-PO-RT02",
+      "doc_no": "PO/RT02/26/019",
+      "doc_type": "purchase_order",
+      "evidence_weight": 1.0,
+      "invoice_id": "INV-RT02-0001",
+      "line_items": [
+        {
+          "cgst_bps": 900,
+          "description": "Anodized Aluminum Heat Sink Extrusions",
+          "hsn_sac": "76042990",
+          "igst_bps": 0,
+          "is_service": false,
+          "line_no": 1,
+          "qty": 500,
+          "rate_paise": 100000,
+          "sgst_bps": 900,
+          "tax_paise": 9000000,
+          "taxable_paise": 50000000,
+          "total_paise": 59000000,
+          "unit": "NOS"
+        }
+      ],
+      "payment_terms_days": 60,
+      "po_id": "D-PO-RT02",
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT02-A",
+      "source": "buyer_portal",
+      "total_paise": 59000000,
+      "valid_from": "2026-08-01",
+      "valid_until": "2026-09-30",
+      "verification_status": "independently_confirmed"
+    },
+    {
+      "buyer_id": "P-RT02-B",
+      "doc_date": "2026-08-09",
+      "doc_id": "D-GRN-RT02",
+      "doc_no": "GRN/RT02/26/022",
+      "doc_type": "grn",
+      "evidence_weight": 1.0,
+      "invoice_id": "INV-RT02-0001",
+      "line_items": [
+        {
+          "cgst_bps": 900,
+          "description": "Anodized Aluminum Heat Sink Extrusions",
+          "hsn_sac": "76042990",
+          "igst_bps": 0,
+          "is_service": false,
+          "line_no": 1,
+          "qty": 500,
+          "rate_paise": 100000,
+          "sgst_bps": 900,
+          "tax_paise": 9000000,
+          "taxable_paise": 50000000,
+          "total_paise": 59000000,
+          "unit": "NOS"
+        }
+      ],
+      "po_id": "D-PO-RT02",
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT02-A",
+      "source": "erp_webhook",
+      "total_paise": 59000000,
+      "verification_status": "independently_confirmed"
+    },
+    {
+      "buyer_id": "P-RT02-B",
+      "doc_date": "2026-08-08",
+      "doc_id": "D-EWB-RT02",
+      "doc_no": "EWB-291008812301",
+      "doc_type": "eway_bill",
+      "distance_km": 28,
+      "evidence_weight": 1.0,
+      "from_pincode": "560058",
+      "generated_at": "2026-08-08T09:00:00Z",
+      "invoice_id": "INV-RT02-0001",
+      "line_items": [],
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT02-A",
+      "source": "gstn_eway_fixture",
+      "to_pincode": "560099",
+      "total_paise": 59000000,
+      "transporter_id": "29AABCT8811K1Z1",
+      "valid_until": "2026-08-10T23:59:59Z",
+      "vehicle_no": "KA01HG7712",
+      "verification_status": "independently_confirmed"
+    }
+  ],
+  "expected": {
+    "case_id": "rt_02_bridge_single_director_decoy",
+    "expected_outcome": "conditionally_approved",
+    "failing_checks": [],
+    "warn_checks": []
+  },
+  "expected_outcome": "conditionally_approved",
+  "history": {
+    "allocations_paise": {},
+    "evidence_docs": [],
+    "invoices": [
+      {
+        "buyer_gstin": "29AABCR2002D1Z0",
+        "buyer_id": "P-RT02-B",
+        "cgst_paise": 4500000,
+        "contract_id": "D-CNT-RT02",
+        "doc_type": "invoice",
+        "due_date": "2026-10-09",
+        "financial_year": "2026-27",
+        "grand_total_paise": 59000000,
+        "igst_paise": 0,
+        "invoice_date": "2026-08-10",
+        "invoice_id": "INV-RT02-0001",
+        "invoice_no": "RT02/26-27/101",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 900,
+            "description": "Anodized Aluminum Heat Sink Extrusions",
+            "hsn_sac": "76042990",
+            "igst_bps": 0,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 500,
+            "rate_paise": 100000,
+            "sgst_bps": 900,
+            "tax_paise": 9000000,
+            "taxable_paise": 50000000,
+            "total_paise": 59000000,
+            "unit": "NOS"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "29",
+        "po_id": "D-PO-RT02",
+        "schema_version": 1,
+        "seller_gstin": "29AABCR2001C1Z3",
+        "seller_id": "P-RT02-A",
+        "sgst_paise": 4500000,
+        "subtotal_paise": 50000000,
+        "total_tax_paise": 9000000
+      }
+    ],
+    "metadata": {
+      "case_id": "rt_02_bridge_single_director_decoy",
+      "redteam": true
+    },
+    "payments": [
+      {
+        "amount_paise": 60000000,
+        "buyer_id": "P-RT02-B",
+        "disputed": false,
+        "dpd": 0,
+        "due_date": "2026-07-01",
+        "invoice_id": "INV-RT02-HIST1",
+        "paid_date": "2026-06-28",
+        "payment_id": "PAY-RT02-01",
+        "seller_id": "P-RT02-A"
+      }
+    ],
+    "reservations": [],
+    "versions": []
+  },
+  "invoice": {
+    "buyer_gstin": "29AABCR2002D1Z0",
+    "buyer_id": "P-RT02-B",
+    "cgst_paise": 4500000,
+    "contract_id": "D-CNT-RT02",
+    "doc_type": "invoice",
+    "due_date": "2026-10-09",
+    "financial_year": "2026-27",
+    "grand_total_paise": 59000000,
+    "igst_paise": 0,
+    "invoice_date": "2026-08-10",
+    "invoice_id": "INV-RT02-0001",
+    "invoice_no": "RT02/26-27/101",
+    "is_export_or_sez": false,
+    "line_items": [
+      {
+        "cgst_bps": 900,
+        "description": "Anodized Aluminum Heat Sink Extrusions",
+        "hsn_sac": "76042990",
+        "igst_bps": 0,
+        "is_service": false,
+        "line_no": 1,
+        "qty": 500,
+        "rate_paise": 100000,
+        "sgst_bps": 900,
+        "tax_paise": 9000000,
+        "taxable_paise": 50000000,
+        "total_paise": 59000000,
+        "unit": "NOS"
+      }
+    ],
+    "payment_terms_days": 60,
+    "place_of_supply_state": "29",
+    "po_id": "D-PO-RT02",
+    "schema_version": 1,
+    "seller_gstin": "29AABCR2001C1Z3",
+    "seller_id": "P-RT02-A",
+    "sgst_paise": 4500000,
+    "subtotal_paise": 50000000,
+    "total_tax_paise": 9000000
+  },
+  "parties": {
+    "P-RT02-A": {
+      "address": "Plot 12, Peenya Industrial Estate Phase II",
+      "bank_account_hash": "7a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e01",
+      "cin": "U27203KA2017PTC101001",
+      "city": "Bengaluru",
+      "directors": [
+        "DIN-07770001",
+        "DIN-07770011"
+      ],
+      "gstin": "29AABCR2001C1Z3",
+      "industry_class": "manufacturing",
+      "name": "Kaveri Extrusion Profiles Pvt Ltd",
+      "pan": "AABCR2001C",
+      "party_id": "P-RT02-A",
+      "phone": "+91-80-28391001",
+      "pincode": "560058",
+      "schema_version": 1,
+      "state_code": "29"
+    },
+    "P-RT02-B": {
+      "address": "Plot 44, Bommasandra Industrial Area",
+      "bank_account_hash": "7a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e02",
+      "cin": "U31100KA2015PLC082002",
+      "city": "Bengaluru",
+      "directors": [
+        "DIN-07770001",
+        "DIN-07770022"
+      ],
+      "gstin": "29AABCR2002D1Z0",
+      "industry_class": "manufacturing",
+      "name": "Nandi Power Electronics Ltd",
+      "pan": "AABCR2002D",
+      "party_id": "P-RT02-B",
+      "phone": "+91-80-27832002",
+      "pincode": "560099",
+      "schema_version": 1,
+      "state_code": "29"
+    }
+  },
+  "redteam_hypothesis": "A single shared independent director between two otherwise unrelated firms must not close a synthetic related-party bridge (requires >= 2 independent corporate links).",
+  "request": {
+    "buyer_id": "P-RT02-B",
+    "invoice_id": "INV-RT02-0001",
+    "lender_id": "L1",
+    "request_id": "REQ-RT02-0001",
+    "requested_amount_paise": 59000000,
+    "schema_version": 1,
+    "seller_id": "P-RT02-A",
+    "seller_signature_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "state": "submitted",
+    "submitted_at": "2026-08-10T14:00:00Z",
+    "tenor_days": 60,
+    "version_id": "V-RT02-0001-1"
+  },
+  "version": {
+    "created_at": "2026-08-10T13:55:00Z",
+    "field_provenance": {},
+    "field_root": "b1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f02",
+    "field_salts": {},
+    "file_sha256": "e1e2d3c4b5a69788695a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d02",
+    "invoice_id": "INV-RT02-0001",
+    "invoice_identity": "5b91b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e02",
+    "kind": "initial",
+    "schema_version": 1,
+    "tamper_hints": [],
+    "version_id": "V-RT02-0001-1",
+    "version_no": 1
+  }
+}

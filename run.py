@@ -43,9 +43,9 @@ def cmd_world(args: argparse.Namespace) -> int:
         str(gen_script),
         "--regime",
         args.regime,
-        "--seed",
-        str(args.seed),
     ]
+    if args.seed is not None:
+        cmd.extend(["--seed", str(args.seed)])
     if args.json_only:
         cmd.append("--json-only")
     return subprocess.call(cmd, cwd=str(ROOT))
@@ -119,7 +119,7 @@ def main() -> int:
 
     p_world = sub.add_parser("world", help="Generate synthetic economy")
     p_world.add_argument("--regime", choices=["A", "B"], default="A")
-    p_world.add_argument("--seed", type=int, default=2601)
+    p_world.add_argument("--seed", type=int, default=None, help="default: 2601 for A, 2602 for B")
     p_world.add_argument("--json-only", action="store_true")
     p_world.set_defaults(func=cmd_world)
 

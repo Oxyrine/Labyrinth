@@ -1,0 +1,6 @@
+{
+  "case_id": "legit_circular",
+  "expected_outcome": "conditionally_approved",
+  "failing_checks": [],
+  "warn_checks": []
+}

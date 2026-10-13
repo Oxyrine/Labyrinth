@@ -1,0 +1,8 @@
+{
+  "case_id": "refinance_settled",
+  "expected_outcome": "reject",
+  "failing_checks": [
+    "dedup.registry"
+  ],
+  "warn_checks": []
+}

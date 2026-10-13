@@ -1,0 +1,6 @@
+{
+  "case_id": "docs_unavailable",
+  "expected_outcome": "review",
+  "failing_checks": [],
+  "warn_checks": []
+}

@@ -1,61 +1,75 @@
 # Tessera — Invoice Financing with Hybrid Audit
 
-Tessera is a consortium invoice-financing and hybrid-audit platform for MSME receivables discounting. It combines deterministic document extraction, three-way PO/GRN/contract matching, atomic consortium double-financing prevention, graph-based circular-trade & related-party ring analysis, transparent buyer/receivables risk pricing, and off-chain AES-256-GCM document storage anchored via RFC-6962 Merkle proofs to an on-chain `Anchor` contract.
+Tessera is an invoice-financing prototype for Synesis 26, Problem 2. One financing request moves through
+extraction, document matching, duplicate and cross-lender checks, a network screen, buyer/receivables risk and a
+decision, and every state change is written to a hash-chained, Merkle-anchored audit log. Uncertain cases go to a person.
 
-## Three Distinct Verification Properties (Never Conflated)
+## Three properties, kept apart
 
-| Property | Established by | What it proves (and does not prove) |
-|---|---|---|
-| **Document consistency** | Extraction validators + three-way matching (`extract/`, `match/`) | Figures, GSTINs, tax regimes, dates, quantities, and rates agree across Invoice, PO, GRN, and Contract. Does **not** prove the trade is genuine. |
-| **Document integrity** | Append-only SHA-256 hash chain + salted RFC-6962 Merkle anchoring (`audit/`, `chain/`) | Submitted files, extracted field versions, and workflow events have not been altered or truncated since capture. Does **not** prove the underlying invoice was truthful when uploaded. |
-| **Trade authenticity** | Nothing proves it; network ring signals + multi-source delivery evidence (`network/`, `match/ewaybill.py`) raise fabrication cost and route suspicious rings to human review | Identifies circular trade loops, corporate-bridge closures, impossible vehicle transit speeds, and low value retention to prioritize human audit. |
+| Property | Question | Established by | What it does **not** show |
+|---|---|---|---|
+| Document consistency | Do the records agree with each other? | `extract/`, `match/` | That the trade happened |
+| Document integrity | Has a record changed since we received it? | `audit/`, `chain/` | That the original was truthful |
+| Trade authenticity | Did the trade happen? | Nothing proves it; `network/` and delivery evidence raise the cost of fabrication and surface it for review | Anything about colluders who forge plausible movement documents |
 
----
-
-## Architecture & Module Seam
-
-Every module communicates exclusively through `contract/models.py` (`schema_version: 1`) and implements the uniform check interface in `contract/context.py`:
-
-```python
-def run(ctx: CaseContext) -> list[CheckResult]
-```
-
-- **Money & Rates**: Strict integer **paise** (`1 ₹ = 100 paise`) and **basis points** (`1% = 100 bps`) everywhere.
-- **Check Status Semantics**: `pass`, `warn`, `fail`, `unavailable`, `not_applicable`. Missing evidence or unreachable sources always emit `unavailable` (routing required checks to human review) — **never** `pass`.
-- **Per-Module Source Flag**: Every `CheckResult` carries `source: "live" | "fixture"`, surfaced directly on the lender explanation card.
-- **Privacy by Default**: External LLM extraction fallback (`claude-haiku-5-5`) and optional card summary (`claude-sonnet-5-5`) are disabled by default (`TESSERA_ALLOW_EXTERNAL_LLM=0`).
-
----
-
-## Repository Layout
-
-```
-tessera/
-  contract/   Pydantic v2 models, JSON Schemas, CaseContext, WIRE_PROTOCOL.md, validate.py
-  fixtures/   Hand-crafted test cases for every fraud, mismatch, and legitimate scenario
-  data/       Deterministic synthetic economy generator (Regime A dev, Regime B held-out)
-  extract/    PDF text layer, 3 deterministic layout parsers, OCR scan path, tamper hints, validators
-  match/      Three-way PO/GRN match, SAC service milestones, ordering, cumulative partials, e-way bill
-  dedup/      HMAC invoice identity, version diffing, near-duplicate check, SQLite BEGIN IMMEDIATE registry
-  network/    Party canonicalization, Tarjan SCC, bounded cycle search, 8 ring signals, legitimacy guard
-  risk/       Buyer payment history, receivables concentration/dilution, points scorecard, bps pricing
-  workflow/   Concurrent stage runner, precedence decision engine, state machine, dual-reviewer overrides
-  audit/      AES-256-GCM blob store, event hash chain, salted RFC-6962 Merkle proofs, selective disclosure
-  chain/      Solidity Anchor.sol, web3.py RPC client, non-blocking background batch anchorer
-  app/        FastAPI server + static vanilla JS UI (Seller, Lender, Reviewer Queue, Verifier, Offline mode)
-  eval/       Independent evaluation harness (reads only pipeline outputs + ground_truth.json)
-```
-
----
-
-## Quickstart
+## Run it
 
 ```bash
-python run.py test               # Run contract validation + full fast test suite
-python run.py world --regime A   # Deterministically generate Regime A economy, PDFs, scans, and keys
-python run.py pipeline           # Run all stages across Regime A and emit decisions.jsonl + rings.json
-python run.py report             # Generate synthetic benchmark report (eval/report.md + eval/report.json)
-TESSERA_DEMO=1 python run.py demo # Start FastAPI server with interactive demo & guided tour
+python -m venv .venv && .venv/Scripts/pip install -r requirements.txt   # Windows; use .venv/bin on Linux/macOS
+python run.py test                    # contract validation + fast tests (python run.py test --all adds slow tests)
+python run.py world --regime A        # deterministic synthetic economy, PDFs, scans
+python run.py pipeline --regime A     # real pipeline over every case -> decisions.jsonl, rings.json, extractions.jsonl
+python run.py report                  # eval/report.md and eval/report.json, computed from those outputs
+TESSERA_DEMO=1 python run.py demo     # UI at http://127.0.0.1:8000 (demo-only tamper / network-off routes need TESSERA_DEMO=1)
+python app/build_data.py              # refresh the offline snapshot app/static/data.js from a real engine run
 ```
 
-> *Pricing Notice*: All advance rates and discount quotes in Tessera are **illustrative prototype policy, not validated lending prices**.
+## What is real
+
+- **Extraction** (`extract/`): reads the *visible* text of three invoice layouts (tabular GST, letterhead, Tally voucher).
+  Nothing is invented: a document that cannot be read raises an error and goes to a human. Platform ids (invoice id,
+  party ids by GSTIN) are assigned by the platform, not read from the file. Scanned copies need OCR.
+- **Matching, duplicates, registry** (`match/`, `dedup/`): three-way match, services path, e-way rules, HMAC invoice identity,
+  near-duplicates, and a SQLite consortium registry with atomic reserve / confirm, idempotent `op_id`s, expire-on-read,
+  seller and buyer Ed25519 signatures, and a capacity cap.
+- **Network** (`network/`): canonicalisation, iterative SCC, bounded ring search, eight signals, legitimate-loop guard,
+  evidence sentences built from numbers. Review priority, not expected loss.
+- **Risk and workflow** (`risk/`, `workflow/`): points scorecard, integer paise / bps pricing, precedence-based decisions,
+  an explicit state machine, dual-reviewer overrides, and disbursement invariants that no override can lift.
+- **Audit** (`audit/`, `chain/`): AES-256-GCM blobs with per-seller wrapped keys, SQLite event hash chain, salted RFC-6962
+  field trees, selective disclosure, Merkle batches, truncation detection. Integrity and anchoring are answered separately.
+- **Evaluation** (`eval/`): reads pipeline outputs and ground truth only, never module code. Thresholds are frozen in
+  `eval/thresholds.lock.json` before the held-out regime B is generated.
+- **Demo app** (`app/`): `app/live.py` runs fixtures and uploads through the real modules; the server is a thin HTTP layer.
+
+## Demo simplifications (the UI says so where it matters)
+
+- **Anchoring is a local simulated contract** unless `TESSERA_RPC` and `TESSERA_ANCHOR_KEY` point at a funded testnet
+  account. `chain/Anchor.sol` and the web3 path exist but have not been run against a testnet here.
+- **Keys**: party, buyer and lender signing keys are derived from a public demo seed, and the demo server signs on
+  behalf of the selected demo role. Production needs a KMS, separate key roles and real identity. Role headers are not authentication.
+- **E-way bills, GRNs and buyer confirmations are fixtures.** Real access needs authorised APIs and taxpayer consent.
+- **The registry is a trusted service** that sees invoice identities. A real deployment needs an oblivious PRF or private
+  set intersection, consortium governance and legal agreements, and it only covers participating lenders.
+- **Grades and rates are illustrative policy**, not a validated credit model. The discount arithmetic is exact.
+- **Benchmark results are synthetic**, from a generator the same team wrote, so they show the system does what it is
+  designed to do, not how it performs on real fraud. Plausible forgeries are generated to be undetectable and are
+  reported as misses.
+- **OCR**: scanned copies are read with Tesseract when installed. It is not installed on the development machine, so the
+  OCR path has not been exercised here; without it, scans are reported as unread (`ocr_engine`) rather than guessed.
+- **Not implemented**: RBI TReDS rules, GST e-invoice IRP integration, data localisation, consent flows.
+
+## Layout
+
+```
+contract/   Pydantic models, JSON Schemas, CaseContext, WIRE_PROTOCOL.md
+fixtures/   25 hand-written cases (one per fraud / mismatch / legitimate type), built by build_fixtures.py
+data/       deterministic generator (world, documents, visible-text PDFs, scans, fraud injection); data/out is committed
+extract/    visible-text parsers, validators, tamper hints, prompt-injection handling, optional pinned Claude fallback (off by default)
+match/ dedup/ network/ risk/ workflow/ audit/ chain/   as above
+app/        live engine, FastAPI server, static UI, offline snapshot
+eval/       baseline, report, extraction accuracy, red-team cases, frozen thresholds
+```
+
+All money is integer paise and rates are basis points. Missing input is `unavailable`, never `pass`. Contract changes
+after the freeze are additive only. Pricing is labelled illustrative everywhere it appears.

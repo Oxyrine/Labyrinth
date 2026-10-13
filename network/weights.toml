@@ -1,0 +1,18 @@
+# Tessera Network Authenticity & Ring Analysis Signal Weights (schema_version = 1)
+
+[weights]
+s_flow = 0.24
+s_product = 0.18
+s_timing = 0.16
+s_isolation = 0.16
+s_movement = 0.08
+s_related = 0.08
+s_transform = 0.05
+s_rapid = 0.05
+
+[thresholds]
+high_tier_min = 0.60
+medium_tier_min = 0.30
+single_signal_cap = 0.59
+boost_trigger_min = 0.60
+signal_floor = 0.0001

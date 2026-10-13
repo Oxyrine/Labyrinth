@@ -1,0 +1,6 @@
+{
+  "case_id": "noisy_scan",
+  "expected_outcome": "conditionally_approved",
+  "failing_checks": [],
+  "warn_checks": []
+}

@@ -1,0 +1,8 @@
+{
+  "case_id": "no_delivery",
+  "expected_outcome": "reject",
+  "failing_checks": [
+    "match.three_way.grn_presence"
+  ],
+  "warn_checks": []
+}

@@ -1,0 +1,8 @@
+{
+  "case_id": "mm_over_invoice",
+  "expected_outcome": "reject",
+  "failing_checks": [
+    "match.over_invoicing"
+  ],
+  "warn_checks": []
+}

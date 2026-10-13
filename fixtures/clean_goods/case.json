@@ -8,7 +8,7 @@
       "distance_km": null,
       "doc_date": "2026-08-01",
       "doc_id": "D-PO-0001",
-      "doc_no": "PO/DDA/26/0089",
+      "doc_no": "PO/DDA/26/0001",
       "doc_type": "purchase_order",
       "evidence_weight": 1.0,
       "file_sha256": null,
@@ -57,8 +57,8 @@
       "to_pincode": null,
       "total_paise": 100000000,
       "transporter_id": null,
-      "valid_from": "2026-08-01",
-      "valid_until": "2026-09-30",
+      "valid_from": "2026-04-01",
+      "valid_until": "2026-12-31",
       "vehicle_no": null,
       "verification_status": "independently_confirmed"
     },
@@ -68,7 +68,7 @@
       "distance_km": null,
       "doc_date": "2026-08-10",
       "doc_id": "D-GRN-0001",
-      "doc_no": "GRN/DDA/26/0144",
+      "doc_no": "GRN/DDA/26/0001",
       "doc_type": "grn",
       "evidence_weight": 1.0,
       "file_sha256": null,
@@ -128,7 +128,7 @@
       "distance_km": null,
       "doc_date": "2026-04-01",
       "doc_id": "D-CNT-0001",
-      "doc_no": "MSA/DDA-SPC/2026",
+      "doc_no": "MSA/DDA-SPC/2026/0001",
       "doc_type": "contract",
       "evidence_weight": 0.7,
       "file_sha256": null,
@@ -140,6 +140,7 @@
       "payment_terms_days": 60,
       "po_id": null,
       "rate_caps_paise": {
+        "72081000": 125000,
         "73181500": 10500,
         "87084000": 82000
       },
@@ -160,7 +161,7 @@
       "distance_km": 42,
       "doc_date": "2026-08-09",
       "doc_id": "D-EWB-0001",
-      "doc_no": "EWB-271009283741",
+      "doc_no": "EWB-2710090001",
       "doc_type": "eway_bill",
       "evidence_weight": 1.0,
       "file_sha256": null,
@@ -179,7 +180,7 @@
       "total_paise": 100000000,
       "transporter_id": "27AABCT9911K1Z5",
       "valid_from": null,
-      "valid_until": "2026-08-11T23:59:59Z",
+      "valid_until": "2026-08-20",
       "vehicle_no": "MH14HG4421",
       "verification_status": "independently_confirmed"
     }
@@ -193,7 +194,7 @@
         "distance_km": null,
         "doc_date": "2026-08-01",
         "doc_id": "D-PO-0001",
-        "doc_no": "PO/DDA/26/0089",
+        "doc_no": "PO/DDA/26/0001",
         "doc_type": "purchase_order",
         "evidence_weight": 1.0,
         "file_sha256": null,
@@ -242,8 +243,8 @@
         "to_pincode": null,
         "total_paise": 100000000,
         "transporter_id": null,
-        "valid_from": "2026-08-01",
-        "valid_until": "2026-09-30",
+        "valid_from": "2026-04-01",
+        "valid_until": "2026-12-31",
         "vehicle_no": null,
         "verification_status": "independently_confirmed"
       },
@@ -253,7 +254,7 @@
         "distance_km": null,
         "doc_date": "2026-08-10",
         "doc_id": "D-GRN-0001",
-        "doc_no": "GRN/DDA/26/0144",
+        "doc_no": "GRN/DDA/26/0001",
         "doc_type": "grn",
         "evidence_weight": 1.0,
         "file_sha256": null,
@@ -313,7 +314,7 @@
         "distance_km": null,
         "doc_date": "2026-04-01",
         "doc_id": "D-CNT-0001",
-        "doc_no": "MSA/DDA-SPC/2026",
+        "doc_no": "MSA/DDA-SPC/2026/0001",
         "doc_type": "contract",
         "evidence_weight": 0.7,
         "file_sha256": null,
@@ -325,6 +326,7 @@
         "payment_terms_days": 60,
         "po_id": null,
         "rate_caps_paise": {
+          "72081000": 125000,
           "73181500": 10500,
           "87084000": 82000
         },
@@ -345,7 +347,7 @@
         "distance_km": 42,
         "doc_date": "2026-08-09",
         "doc_id": "D-EWB-0001",
-        "doc_no": "EWB-271009283741",
+        "doc_no": "EWB-2710090001",
         "doc_type": "eway_bill",
         "evidence_weight": 1.0,
         "file_sha256": null,
@@ -364,7 +366,7 @@
         "total_paise": 100000000,
         "transporter_id": "27AABCT9911K1Z5",
         "valid_from": null,
-        "valid_until": "2026-08-11T23:59:59Z",
+        "valid_until": "2026-08-20",
         "vehicle_no": "MH14HG4421",
         "verification_status": "independently_confirmed"
       }
@@ -433,34 +435,63 @@
     },
     "payments": [
       {
-        "amount_paise": 90000000,
+        "amount_paise": 95000000,
         "buyer_id": "P-0002",
         "disputed": false,
         "dpd": 0,
-        "due_date": "2026-07-01",
+        "due_date": "2026-01-25",
         "invoice_id": "INV-HIST-0001",
-        "paid_date": "2026-06-29",
-        "payment_id": "PAY-0001",
+        "paid_date": "2026-01-22",
+        "payment_id": "PAY-HIST-0001",
         "seller_id": "P-0001"
+      },
+      {
+        "amount_paise": 100000000,
+        "buyer_id": "P-0002",
+        "disputed": false,
+        "dpd": 0,
+        "due_date": "2026-02-25",
+        "invoice_id": "INV-HIST-0002",
+        "paid_date": "2026-02-22",
+        "payment_id": "PAY-HIST-0002",
+        "seller_id": "P-0092"
+      },
+      {
+        "amount_paise": 105000000,
+        "buyer_id": "P-0002",
+        "disputed": false,
+        "dpd": 0,
+        "due_date": "2026-03-25",
+        "invoice_id": "INV-HIST-0003",
+        "paid_date": "2026-03-22",
+        "payment_id": "PAY-HIST-0003",
+        "seller_id": "P-0093"
+      },
+      {
+        "amount_paise": 110000000,
+        "buyer_id": "P-0002",
+        "disputed": false,
+        "dpd": 0,
+        "due_date": "2026-04-25",
+        "invoice_id": "INV-HIST-0004",
+        "paid_date": "2026-04-22",
+        "payment_id": "PAY-HIST-0004",
+        "seller_id": "P-0094"
+      },
+      {
+        "amount_paise": 115000000,
+        "buyer_id": "P-0002",
+        "disputed": false,
+        "dpd": 0,
+        "due_date": "2026-05-25",
+        "invoice_id": "INV-HIST-0005",
+        "paid_date": "2026-05-22",
+        "payment_id": "PAY-HIST-0005",
+        "seller_id": "P-0095"
       }
     ],
     "reservations": [],
-    "versions": [
-      {
-        "created_at": "2026-08-12T10:00:00Z",
-        "field_provenance": {},
-        "field_root": "516f3451c0980a18449bf158e5763361e53e7b397ec8ec9e848b6fd939721e2f",
-        "field_salts": {},
-        "file_sha256": "7ac0b7f0e3754d8ff107362a6bc36ac943819c1083d9d24f6d07178bb5ff4a3d",
-        "invoice_id": "INV-FX-0001",
-        "invoice_identity": "1c53a680b5972fbd217dd6399d434ec2135793958492f599f2617cb4f960278b",
-        "kind": "initial",
-        "schema_version": 1,
-        "tamper_hints": [],
-        "version_id": "V-FX-0001-1",
-        "version_no": 1
-      }
-    ]
+    "versions": []
   },
   "invoice": {
     "buyer_gstin": "27AABCB5812K1ZP",
@@ -524,7 +555,7 @@
       "address": "Plot 14, Chakan MIDC Phase II",
       "bank_account_hash": "0461c9606a1e6bc7f9650ae4f43a99729bc045cd9856ff2e4f2fe4accec6b7fb",
       "cin": "U27100MH2018PTC304112",
-      "city": "Pune",
+      "city": "Pune Chakan",
       "directors": [
         "DIN-08112201",
         "DIN-08112202"
@@ -544,7 +575,7 @@
       "address": "B-22, Ranjangaon Industrial Area",
       "bank_account_hash": "f78a47ee508fffb03b5a6d77c3b019a60386e801403f3fbad0bf7f61cc187797",
       "cin": "U29304MH2015PLC268901",
-      "city": "Pune",
+      "city": "Pune Ranjangaon",
       "directors": [
         "DIN-09001101",
         "DIN-09001102"
@@ -578,9 +609,9 @@
   "version": {
     "created_at": "2026-08-12T10:00:00Z",
     "field_provenance": {},
-    "field_root": "516f3451c0980a18449bf158e5763361e53e7b397ec8ec9e848b6fd939721e2f",
+    "field_root": "993f974f0684c855ed24d2b4a4b9f3cfea086d17dae0ddeaacdf0a48a253d778",
     "field_salts": {},
-    "file_sha256": "7ac0b7f0e3754d8ff107362a6bc36ac943819c1083d9d24f6d07178bb5ff4a3d",
+    "file_sha256": "1c0c043236880312388cba546f50bdfb5c98fba2721a2d7b8a3e3e0bb4ba1728",
     "invoice_id": "INV-FX-0001",
     "invoice_identity": "1c53a680b5972fbd217dd6399d434ec2135793958492f599f2617cb4f960278b",
     "kind": "initial",

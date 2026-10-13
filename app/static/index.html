@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera — Trade &amp; Invoice Verification Infrastructure</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B192C'/%3E%3Cpath d='M8 10h16v3H17.5v11h-3V13H8z' fill='%2338BDF8'/%3E%3Ccircle cx='23' cy='21' r='3.5' fill='%23F59E0B'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <a href="#main-workspace" class="skip-link">Skip to main workspace</a>
+
+  <header class="top-header" role="banner">
+    <div class="header-inner">
+      <div class="brand-cluster">
+        <div class="brand-glyph" aria-hidden="true">T</div>
+        <div>
+          <div class="brand-title-row">
+            <h1 class="brand-title">TESSERA</h1>
+            <span class="brand-version">SCHEMA v1 · SYNESIS 26</span>
+          </div>
+          <p class="brand-subtitle">Consortium Invoice Factoring &amp; Multi-Tier Supply-Chain Verification</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="connection-pill" id="connection-badge" title="Current data source mode">
+          <span class="status-dot" id="connection-dot"></span>
+          <span id="connection-text">LIVE API</span>
+        </div>
+
+        <label class="role-selector-wrap" for="role-switcher">
+          <span class="role-label">Active Identity</span>
+          <select id="role-switcher" class="role-select" aria-label="Switch active role token">
+            <option value="lender:L1">Lender · Consortium Bank L1</option>
+            <option value="lender:L2">Lender · Consortium Bank L2</option>
+            <option value="seller:P-0001">Seller · Sahyadri Castings (P-0001)</option>
+            <option value="buyer:P-0002">Buyer · Deccan Drivetrain (P-0002)</option>
+            <option value="reviewer:REV-1">Reviewer · Senior Credit Officer (REV-1)</option>
+            <option value="reviewer:REV-2">Reviewer · Second Sign-off Officer (REV-2)</option>
+            <option value="auditor:AUD-1">Auditor · Cryptographic Verifier (AUD-1)</option>
+          </select>
+        </label>
+
+        <button type="button" id="start-tour-btn" class="btn btn-tour">
+          6-Step Judge Demo Tour
+        </button>
+      </div>
+    </div>
+
+    <div class="three-prop-banner" aria-label="Three Core Verification Properties">
+      <div class="prop-banner-item" id="global-prop-consistency">
+        <div class="prop-banner-head">
+          <span class="prop-index">01</span>
+          <span class="prop-title">Document Consistency</span>
+          <span class="prop-modules">extract · match · dedup</span>
+          <span class="badge badge-pass" id="banner-badge-consistency">PASS</span>
+        </div>
+        <p class="prop-desc">Do Invoice, PO, GRN, and Contract agree on parties, HSN/SAC, quantities, unit rates, tax regime, and dates?</p>
+      </div>
+
+      <div class="prop-banner-item" id="global-prop-integrity">
+        <div class="prop-banner-head">
+          <span class="prop-index">02</span>
+          <span class="prop-title">Document Integrity</span>
+          <span class="prop-modules">audit · chain</span>
+          <span class="badge badge-pass" id="banner-badge-integrity">VERIFIED · ANCHORED</span>
+        </div>
+        <p class="prop-desc">Are off-chain AES-256-GCM blobs and salted RFC-6962 field roots unaltered, and their batch roots anchored (local simulated contract unless a testnet is configured)?</p>
+      </div>
+
+      <div class="prop-banner-item" id="global-prop-authenticity">
+        <div class="prop-banner-head">
+          <span class="prop-index">03</span>
+          <span class="prop-title">Trade Authenticity</span>
+          <span class="prop-modules">network · ewaybill</span>
+          <span class="badge badge-info" id="banner-badge-authenticity">RAISES FABRICATION COST</span>
+        </div>
+        <p class="prop-desc">Nothing proves physical trade if parties collude; graph ring topology, EWB transit physics, and corporate bridges raise fabrication cost.</p>
+      </div>
+    </div>
+  </header>
+
+  <section id="tour-drawer" class="tour-drawer hidden" aria-label="6-Step Live Judge Demo Tour">
+    <div class="tour-drawer-inner">
+      <div class="tour-step-pills" id="tour-step-pills"></div>
+      <div class="tour-stage-body">
+        <div class="tour-stage-main">
+          <div class="tour-stage-header">
+            <span class="badge badge-warn" id="tour-step-tag">STEP 1 OF 6</span>
+            <h2 class="tour-stage-title" id="tour-step-title">Consistent 5-Firm Ring (ring_real_firms)</h2>
+          </div>
+          <p class="tour-stage-narrative" id="tour-step-narrative"></p>
+          <p class="tour-stage-quote" id="tour-step-quote"></p>
+        </div>
+        <div class="tour-stage-actions">
+          <button type="button" id="tour-prev-btn" class="btn btn-secondary">Previous Step</button>
+          <button type="button" id="tour-action-btn" class="btn btn-primary">Load Step in Workspace</button>
+          <button type="button" id="tour-next-btn" class="btn btn-secondary">Next Step</button>
+          <button type="button" id="tour-close-btn" class="btn btn-ghost">Close Tour</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="workspace-tabs" role="tablist" aria-label="Tessera Views">
+    <button type="button" role="tab" aria-selected="false" aria-controls="panel-seller" id="tab-btn-seller" class="tab-btn" data-tab="seller">
+      <span class="tab-num">1</span>
+      <span>Seller Upload &amp; Extraction</span>
+    </button>
+    <button type="button" role="tab" aria-selected="true" aria-controls="panel-lender" id="tab-btn-lender" class="tab-btn active" data-tab="lender">
+      <span class="tab-num">2</span>
+      <span>Lender Explanation Card</span>
+    </button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="panel-queue" id="tab-btn-queue" class="tab-btn" data-tab="queue">
+      <span class="tab-num">3</span>
+      <span>Reviewer Queue &amp; Consortium Registry</span>
+    </button>
+    <button type="button" role="tab" aria-selected="false" aria-controls="panel-verifier" id="tab-btn-verifier" class="tab-btn" data-tab="verifier">
+      <span class="tab-num">4</span>
+      <span>Hybrid Audit Verifier &amp; Break-It</span>
+    </button>
+  </nav>
+
+  <main id="main-workspace" class="main-workspace">
+    <!-- TAB 1: SELLER UPLOAD -->
+    <section id="panel-seller" role="tabpanel" aria-labelledby="tab-btn-seller" class="tab-panel hidden">
+      <div class="grid-2col">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Invoice PDF &amp; Evidence Submission</h2>
+              <p class="card-subtitle">Upload a commercial GST invoice PDF (%PDF- verified, max 10 MB) or load a deterministic fixture bundle.</p>
+            </div>
+            <span class="badge badge-info">STAGE 1 · EXTRACT</span>
+          </div>
+
+          <div class="form-group">
+            <label class="field-label" for="seller-fixture-select">Select Fixture / Demo Scenario</label>
+            <select id="seller-fixture-select" class="input-select"></select>
+          </div>
+
+          <div class="dropzone" id="pdf-dropzone" tabindex="0" role="button" aria-label="Upload GST Invoice PDF">
+            <input type="file" id="pdf-file-input" accept=".pdf,application/pdf" class="sr-only">
+            <div class="dropzone-title" id="dropzone-filename">Drop GST Invoice PDF here or click to browse</div>
+            <div class="dropzone-hint">Enforces %PDF- magic byte verification · 10 MB payload limit · AES-256-GCM off-chain storage</div>
+          </div>
+
+          <div class="evidence-checklist">
+            <div class="field-label">Attached Supporting Trade Evidence</div>
+            <div class="checkbox-row">
+              <label class="check-pill"><input type="checkbox" id="attach-po" checked> <span>Purchase Order (Buyer Portal · weight 1.0)</span></label>
+              <label class="check-pill"><input type="checkbox" id="attach-grn" checked> <span>Goods Receipt Note (ERP Webhook · weight 1.0)</span></label>
+              <label class="check-pill"><input type="checkbox" id="attach-cnt" checked> <span>Master Contract (Signed · weight 0.7)</span></label>
+              <label class="check-pill"><input type="checkbox" id="attach-ewb" checked> <span>GSTN E-Way Bill (Fixture · weight 1.0)</span></label>
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button type="button" id="seller-submit-btn" class="btn btn-primary">Run Extraction &amp; Submit for Financing</button>
+            <button type="button" id="seller-test-invalid-btn" class="btn btn-secondary">Test Non-PDF Rejection (400)</button>
+          </div>
+          <div id="seller-status-msg" class="status-banner hidden" role="status"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Extracted Fields &amp; Provenance Confidence</h2>
+              <p class="card-subtitle">Deterministic layout parser output with per-field confidence chips and page provenance.</p>
+            </div>
+            <span class="badge badge-pass" id="seller-extract-badge">DETERMINISTIC REGEX</span>
+          </div>
+          <div id="seller-extracted-fields" class="extracted-grid"></div>
+          <div class="section-divider"></div>
+          <h3 class="section-heading">Extracted Line Items (Strict Integer Paise &amp; Basis Points)</h3>
+          <div id="seller-line-items-wrap" class="table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LENDER EXPLANATION CARD -->
+    <section id="panel-lender" role="tabpanel" aria-labelledby="tab-btn-lender" class="tab-panel">
+      <div class="lender-toolbar card">
+        <div class="toolbar-left">
+          <label for="lender-case-select" class="field-label-inline">Inspect Case:</label>
+          <select id="lender-case-select" class="input-select"></select>
+          <span class="mono-id" id="lender-req-id-pill">REQ-FX-0001</span>
+        </div>
+        <div class="toolbar-right">
+          <button type="button" id="lender-accept-btn" class="btn btn-secondary">1. Record Buyer Signed Acceptance</button>
+          <button type="button" id="lender-confirm-btn" class="btn btn-primary">2. Confirm Reservation &amp; Disburse</button>
+        </div>
+      </div>
+
+      <div id="lender-action-feedback" class="status-banner hidden" role="status"></div>
+
+      <div class="lender-summary-grid">
+        <div class="card decision-hero-card">
+          <div class="decision-hero-top">
+            <div>
+              <div class="eyebrow">WORKFLOW DECISION OUTCOME</div>
+              <div class="decision-outcome-row">
+                <span id="lender-outcome-badge" class="outcome-badge outcome-approved">CONDITIONALLY APPROVED</span>
+                <span id="lender-state-badge" class="badge badge-info">STATE: COND_APPROVED</span>
+              </div>
+            </div>
+            <div class="grade-box">
+              <div class="grade-label">RISK GRADE</div>
+              <div class="grade-letter" id="lender-grade-letter">B</div>
+              <div class="grade-points" id="lender-grade-points">86 / 100 pts</div>
+            </div>
+          </div>
+
+          <div class="decision-meta-strip" id="lender-invoice-summary"></div>
+
+          <div class="reasons-block">
+            <div class="field-label">Top Numerical Decision Reasons &amp; Active Conditions</div>
+            <ul class="reasons-list" id="lender-top-reasons"></ul>
+            <div class="conditions-row" id="lender-conditions"></div>
+          </div>
+        </div>
+
+        <div class="card pricing-card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Risk-Adjusted Pricing &amp; Discount Trace</h2>
+              <p class="card-subtitle">Integer paise &amp; basis-point calculation (round-half-up)</p>
+            </div>
+            <span class="badge badge-info" id="lender-tier-badge">NETWORK TIER: LOW</span>
+          </div>
+          <div id="lender-pricing-body"></div>
+          <div class="policy-notice" id="lender-policy-notice">
+            Illustrative prototype policy, not validated lending prices.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Supply-Chain Network &amp; Ring Topology</h2>
+              <p class="card-subtitle">Solid arrows = invoiced trade hops · Dashed orange = corporate bridges (&gt;= 2 links)</p>
+            </div>
+            <span class="badge badge-warn" id="ring-summary-badge">RING GRAPH</span>
+          </div>
+          <div id="ring-svg-container" class="ring-svg-box" aria-label="Supply chain network graph visualization"></div>
+          <div id="ring-signals-bars" class="signals-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Version Diff &amp; Evidence Provenance</h2>
+              <p class="card-subtitle">HMAC identity comparison, near-duplicate homoglyphs, and supporting document weights</p>
+            </div>
+            <span class="badge badge-info" id="lender-version-kind-badge">INITIAL v1</span>
+          </div>
+          <div id="lender-version-diff-wrap"></div>
+          <div class="section-divider"></div>
+          <h3 class="section-heading">Supporting Evidence Documents &amp; Derived Weights</h3>
+          <div id="lender-evidence-table-wrap" class="table-wrap"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Stage-by-Stage Verification Checks (22 Registered Dotted IDs)</h2>
+            <p class="card-subtitle">Each check reports status (pass / warn / fail / unavailable / not_applicable), source (live / fixture), and evidence weight.</p>
+          </div>
+          <div class="fixture-notice">
+            Note: E-way bills and buyer confirmations in this demo come from deterministic fixtures (source: fixture).
+          </div>
+        </div>
+        <div id="lender-checks-container" class="checks-stages-stack"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: REVIEWER QUEUE & CONSORTIUM REGISTRY -->
+    <section id="panel-queue" role="tabpanel" aria-labelledby="tab-btn-queue" class="tab-panel hidden">
+      <div class="grid-2col">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Prioritized Human Review Queue</h2>
+              <p class="card-subtitle">Sorted strictly by review priority (Network Tier, Exposure in Paise) — never conflated with expected_loss.</p>
+            </div>
+            <span class="badge badge-warn">SORT: (TIER, EXPOSURE_PAISE)</span>
+          </div>
+          <div id="queue-table-wrap" class="table-wrap"></div>
+        </div>
+
+        <div class="stack-col">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Consortium Registry &amp; Parallel Lender Race (Step 2)</h2>
+                <p class="card-subtitle">SQLite WAL with BEGIN IMMEDIATE + partial unique index on active invoice_identity.</p>
+              </div>
+              <span class="badge badge-info">ATOMIC DEDUP</span>
+            </div>
+            <p class="helper-copy">
+              Fire two simultaneous reservation requests from Consortium Bank L1 and Bank L2 on the exact same invoice identity to verify atomic single-winner exclusivity.
+            </p>
+            <div class="action-bar">
+              <button type="button" id="trigger-race-btn" class="btn btn-primary">Fire Parallel L1 vs L2 Reservation Race</button>
+              <button type="button" id="inspect-settled-btn" class="btn btn-secondary">Inspect Settled Refinance Block</button>
+            </div>
+            <div id="race-result-box" class="race-result-box"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Reviewer Override &amp; Dual Sign-Off</h2>
+                <p class="card-subtitle">Requires reviewer role token. Hard-fail overrides enforce a distinct second_reviewer_id.</p>
+              </div>
+              <span class="badge badge-warn" id="override-dual-badge">REVIEWER AUTH</span>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="field-label" for="override-case-select">Target Request</label>
+                <select id="override-case-select" class="input-select"></select>
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="override-outcome-select">New Outcome</label>
+                <select id="override-outcome-select" class="input-select">
+                  <option value="conditionally_approved">conditionally_approved</option>
+                  <option value="review">review</option>
+                  <option value="reject">reject</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="override-reviewer1">Primary Reviewer ID</label>
+                <input type="text" id="override-reviewer1" class="input-text" value="REV-1">
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="override-reviewer2">Second Reviewer ID (Required on Hard Fail)</label>
+                <input type="text" id="override-reviewer2" class="input-text" value="REV-2" placeholder="e.g. REV-2 (must differ from primary)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="field-label" for="override-reason">Written Audit Justification (Required, min 3 chars)</label>
+              <input type="text" id="override-reason" class="input-text" value="Verified physical weighbridge slip and buyer treasury confirmation call.">
+            </div>
+            <div class="action-bar">
+              <button type="button" id="submit-override-btn" class="btn btn-primary">Record Audited Override</button>
+            </div>
+            <div id="override-feedback" class="status-banner hidden" role="status"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: HYBRID AUDIT VERIFIER & JUDGE BREAK-IT -->
+    <section id="panel-verifier" role="tabpanel" aria-labelledby="tab-btn-verifier" class="tab-panel hidden">
+      <div class="grid-2col">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Hybrid Cryptographic Audit Verifier (Step 5)</h2>
+              <p class="card-subtitle">Two independent verification answers — Off-Chain Integrity vs. On-Chain Anchoring (never conflated).</p>
+            </div>
+            <span class="badge badge-info">RFC-6962 + AES-256-GCM</span>
+          </div>
+
+          <div class="Verifier-controls-row">
+            <label class="field-label-inline" for="audit-target-select">Target Artifact:</label>
+            <select id="audit-target-select" class="input-select">
+              <option value="D-PO-0001">D-PO-0001 (Purchase Order · clean_goods)</option>
+              <option value="D-GRN-0001">D-GRN-0001 (Goods Receipt Note · clean_goods)</option>
+              <option value="D-EWB-0001">D-EWB-0001 (E-Way Bill · clean_goods)</option>
+              <option value="D-PO-0001-R1">D-PO-0001-R1 (Purchase Order · ring_real_firms)</option>
+              <option value="clean_goods">Case Bundle · clean_goods (REQ-FX-0001)</option>
+              <option value="ring_real_firms">Case Bundle · ring_real_firms (REQ-DEMO-0001)</option>
+            </select>
+            <button type="button" id="audit-verify-btn" class="btn btn-secondary">Re-Verify Now</button>
+          </div>
+
+          <div class="action-bar demo-fault-bar">
+            <button type="button" id="demo-tamper-btn" class="btn btn-danger">Tamper 1 Byte in Encrypted Blob</button>
+            <button type="button" id="demo-netoff-btn" class="btn btn-warn">Toggle Anchor RPC Network-Off</button>
+            <button type="button" id="demo-restore-btn" class="btn btn-ghost">Restore Clean State</button>
+          </div>
+
+          <div class="two-answers-grid">
+            <div class="answer-box" id="audit-integrity-box">
+              <div class="answer-eyebrow">ANSWER 1 · OFF-CHAIN DOCUMENT INTEGRITY</div>
+              <div class="answer-status" id="audit-integrity-status">VERIFIED</div>
+              <p class="answer-detail" id="audit-integrity-detail"></p>
+            </div>
+            <div class="answer-box" id="audit-anchoring-box">
+              <div class="answer-eyebrow">ANSWER 2 · ON-CHAIN MERKLE ANCHORING</div>
+              <div class="answer-status" id="audit-anchoring-status">ANCHORED</div>
+              <p class="answer-detail" id="audit-anchoring-detail"></p>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+          <h3 class="section-heading">RFC-6962 Salted Field Selective Disclosure Proof</h3>
+          <p class="helper-copy">
+            Proves invoice field <code>grand_total_paise</code> against <code>field_root</code> using domain-separated leaf <code>H(0x00 || salt || name || value)</code> without revealing confidential line items or other field salts.
+          </p>
+          <div id="audit-disclosure-box" class="disclosure-box"></div>
+        </div>
+
+        <div class="stack-col">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Judge Break-It — Interactive Ring Builder (Step 6)</h2>
+                <p class="card-subtitle">Change the ring template's speed, retention, links, duration and HSN, then see the real network check re-score it.</p>
+              </div>
+              <span class="badge badge-warn">POST /breakit</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="field-label" for="breakit-preset-select">Load Ring Preset</label>
+                <select id="breakit-preset-select" class="input-select">
+                  <option value="carousel_5">5-Firm Pass-Through Carousel (0.7% retained, 410 km/h EWB, 2-link bridge)</option>
+                  <option value="single_link">4-Firm Ring with Single Corporate Link (Tests Lesson 4: &lt; 2 links = no bridge)</option>
+                  <option value="legit_mfg">3-Firm Legitimate Manufacturing Cycle (HSN 7201-&gt;8708-&gt;8703, 18.4% retained, 24d)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="breakit-speed-input">Max E-Way Bill Implied Speed (km/h)</label>
+                <input type="number" id="breakit-speed-input" class="input-text" value="410" min="10" max="900">
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="breakit-retained-input">Interior Firm Value Retained (%)</label>
+                <input type="number" id="breakit-retained-input" class="input-text" value="0.7" step="0.1" min="0" max="100">
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="breakit-links-input">Independent Corporate Bridge Links (0–3)</label>
+                <input type="number" id="breakit-links-input" class="input-text" value="2" min="0" max="3">
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="breakit-days-input">Total Cycle Duration (Days)</label>
+                <input type="number" id="breakit-days-input" class="input-text" value="2" min="1" max="90">
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="breakit-transform-select">HSN Chapter Transformation</label>
+                <select id="breakit-transform-select" class="input-select">
+                  <option value="false">No — Identical HSN 87084000 across all hops</option>
+                  <option value="true">Yes — Multi-stage HSN transformation (7201 -&gt; 8708 -&gt; 8703)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button type="button" id="run-breakit-btn" class="btn btn-primary">Evaluate Custom Ring on /breakit</button>
+            </div>
+
+            <div id="breakit-result-panel" class="breakit-result-panel"></div>
+            <div id="breakit-ring-svg" class="ring-svg-box compact-svg"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Synthetic Benchmark Summary (Regime B Holdout)</h2>
+                <p class="card-subtitle">Rules-only baseline vs. hybrid (baseline + network) lift and honest evasive miss rate.</p>
+              </div>
+              <span class="badge badge-pass">EVAL REPORT</span>
+            </div>
+            <div id="eval-summary-box"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="ring.js"></script>
+  <script src="seller.js"></script>
+  <script src="lender.js"></script>
+  <script src="queue.js"></script>
+  <script src="verifier.js"></script>
+  <script src="tour.js"></script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+# Tessera Buyer & Receivables Risk Scorecard (schema_version = 1)
+# Illustrative prototype policy, not validated commercial lending prices.
+
+base_points = 100
+
+[grade_bands]
+A = 85
+B = 70
+C = 55
+D = 40
+E = 0
+
+[pricing.A]
+advance_rate_bps = 9000
+annual_rate_bps = 1000
+
+[pricing.B]
+advance_rate_bps = 8500
+annual_rate_bps = 1200
+
+[pricing.C]
+advance_rate_bps = 7500
+annual_rate_bps = 1400
+
+[pricing.D]
+advance_rate_bps = 6000
+annual_rate_bps = 1700
+
+[pricing.E]
+advance_rate_bps = 0
+annual_rate_bps = 0
+
+# Feature deduction/bonus bands evaluated against base_points = 100.
+# A clean goods invoice with normal/good buyer history (60d tenor, standard concentration)
+# lands in Grade B (70..84 points -> 85% advance rate, 12% p.a. annual rate).
+
+[[bands.on_time_rate]]
+min = 0.95
+points = 0
+label = "strong on-time payment record"
+
+[[bands.on_time_rate]]
+min = 0.85
+points = -5
+label = "good on-time payment record"
+
+[[bands.on_time_rate]]
+min = 0.70
+points = -10
+label = "moderate on-time payment record"
+
+[[bands.on_time_rate]]
+min = 0.50
+points = -18
+label = "weak on-time payment record"
+
+[[bands.on_time_rate]]
+min = 0.0
+points = -30
+label = "chronic late payment record"
+
+[[bands.avg_dpd]]
+max = 3.0
+points = 0
+label = "minimal average days past due"
+
+[[bands.avg_dpd]]
+max = 10.0
+points = -3
+label = "low average days past due"
+
+[[bands.avg_dpd]]
+max = 25.0
+points = -8
+label = "elevated average days past due"
+
+[[bands.avg_dpd]]
+max = 45.0
+points = -14
+label = "high average days past due"
+
+[[bands.avg_dpd]]
+max = 999999.0
+points = -24
+label = "severe average days past due"
+
+[[bands.worst_dpd]]
+max = 15
+points = 0
+label = "contained peak delinquency"
+
+[[bands.worst_dpd]]
+max = 30
+points = -2
+label = "minor peak delinquency"
+
+[[bands.worst_dpd]]
+max = 60
+points = -5
+label = "moderate peak delinquency"
+
+[[bands.worst_dpd]]
+max = 90
+points = -10
+label = "serious peak delinquency"
+
+[[bands.worst_dpd]]
+max = 999999
+points = -16
+label = "90+ DPD peak delinquency"
+
+[[bands.avg_days_to_pay]]
+max = 35.0
+points = 0
+label = "fast cash conversion cycle"
+
+[[bands.avg_days_to_pay]]
+max = 65.0
+points = -6
+label = "standard 60-day cash conversion cycle"
+
+[[bands.avg_days_to_pay]]
+max = 95.0
+points = -10
+label = "extended cash conversion cycle"
+
+[[bands.avg_days_to_pay]]
+max = 999999.0
+points = -15
+label = "protracted cash conversion cycle"
+
+[[bands.dispute_rate]]
+max = 0.0
+points = 0
+label = "zero historical payment disputes"
+
+[[bands.dispute_rate]]
+max = 0.10
+points = -6
+label = "low payment dispute frequency"
+
+[[bands.dispute_rate]]
+max = 0.25
+points = -14
+label = "elevated payment dispute frequency"
+
+[[bands.dispute_rate]]
+max = 1.0
+points = -24
+label = "high payment dispute frequency"
+
+[[bands.six_month_trend]]
+max = -3.0
+points = 3
+label = "improving 6-month DPD trend"
+
+[[bands.six_month_trend]]
+max = 5.0
+points = 0
+label = "stable 6-month DPD trend"
+
+[[bands.six_month_trend]]
+max = 15.0
+points = -3
+label = "slowing 6-month DPD trend"
+
+[[bands.six_month_trend]]
+max = 999999.0
+points = -6
+label = "deteriorating 6-month DPD trend"
+
+[[bands.buyer_concentration_share]]
+max = 0.30
+points = 0
+label = "diversified buyer receivables book"
+
+[[bands.buyer_concentration_share]]
+max = 0.60
+points = -4
+label = "moderate single-buyer concentration"
+
+[[bands.buyer_concentration_share]]
+max = 1.0
+points = -6
+label = "high single-buyer concentration"
+
+[[bands.ageing_over_90d_share]]
+max = 0.0
+points = 0
+label = "no receivables aged over 90 days"
+
+[[bands.ageing_over_90d_share]]
+max = 0.10
+points = -6
+label = "minor 90+ day receivables ageing"
+
+[[bands.ageing_over_90d_share]]
+max = 0.25
+points = -14
+label = "material 90+ day receivables ageing"
+
+[[bands.ageing_over_90d_share]]
+max = 1.0
+points = -22
+label = "heavy 90+ day receivables ageing"
+
+[[bands.dilution_rate]]
+max = 0.02
+points = 0
+label = "minimal credit-note dilution"
+
+[[bands.dilution_rate]]
+max = 0.08
+points = -5
+label = "moderate credit-note dilution"
+
+[[bands.dilution_rate]]
+max = 0.15
+points = -10
+label = "elevated credit-note dilution"
+
+[[bands.dilution_rate]]
+max = 1.0
+points = -18
+label = "high credit-note dilution"
+
+[[bands.financed_share]]
+max = 0.50
+points = 0
+label = "conservative existing financing utilization"
+
+[[bands.financed_share]]
+max = 0.80
+points = -4
+label = "moderate existing financing utilization"
+
+[[bands.financed_share]]
+max = 1.0
+points = -8
+label = "high existing financing utilization"
+
+[[bands.tenor_days]]
+max = 30
+points = 0
+label = "short 30-day financing tenor"
+
+[[bands.tenor_days]]
+max = 45
+points = -5
+label = "45-day financing tenor"
+
+[[bands.tenor_days]]
+max = 60
+points = -10
+label = "standard 60-day financing tenor"
+
+[[bands.tenor_days]]
+max = 90
+points = -14
+label = "extended 90-day financing tenor"
+
+[[bands.tenor_days]]
+max = 999999
+points = -20
+label = "long (>90d) financing tenor"
+
+[[bands.amount_to_seller_median_ratio]]
+max = 1.5
+points = 0
+label = "invoice size consistent with seller median"
+
+[[bands.amount_to_seller_median_ratio]]
+max = 3.0
+points = -5
+label = "invoice size above seller median"
+
+[[bands.amount_to_seller_median_ratio]]
+max = 999999.0
+points = -10
+label = "outlier invoice size vs seller median"
+
+[pair_history]
+new_pair_points = -6
+shallow_history_threshold = 5
+shallow_history_points = -3
+
+[network_tier_points]
+low = 0
+medium = -15
+high = -35

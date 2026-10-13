@@ -1,0 +1,8 @@
+{
+  "case_id": "mm_ewb_missing",
+  "expected_outcome": "reject",
+  "failing_checks": [
+    "match.ewaybill"
+  ],
+  "warn_checks": []
+}

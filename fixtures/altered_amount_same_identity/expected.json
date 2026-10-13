@@ -1,0 +1,8 @@
+{
+  "case_id": "altered_amount_same_identity",
+  "expected_outcome": "review",
+  "failing_checks": [],
+  "warn_checks": [
+    "dedup.identity"
+  ]
+}

@@ -1,0 +1,14 @@
+# Simplified e-way bill rules table (strict integers in paise)
+threshold_paise = 5000000
+exempt_hsn_prefixes = ["0101", "0701", "1001", "4901"]
+simplified_notice = "Evaluated under simplified e-way bill rules table (₹50,000 threshold)."
+
+[intrastate_thresholds_paise]
+"07" = 5000000
+"09" = 5000000
+"19" = 5000000
+"24" = 5000000
+"27" = 5000000
+"29" = 5000000
+"33" = 5000000
+"36" = 5000000

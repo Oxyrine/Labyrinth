@@ -41,7 +41,7 @@
     ],
     "evidence_weight": 0.4,
     "refs": [
-      "INV-FX-0002"
+      "INV-FX-0003"
     ],
     "schema_version": 1,
     "severity": "hard",
@@ -73,7 +73,7 @@
     ],
     "evidence_weight": 1.0,
     "refs": [
-      "INV-FX-0003"
+      "INV-FX-0002"
     ],
     "schema_version": 1,
     "severity": "info",

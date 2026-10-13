@@ -1,0 +1,427 @@
+{
+  "case_id": "rt_03_slow_ring_45d",
+  "case_type": "ring_real_firms",
+  "checks": [
+    {
+      "check": "network.ring",
+      "details": {
+        "cycle_span_days": 45,
+        "ring_id": "R93",
+        "s_flow": 0.96,
+        "s_isolation": 0.92,
+        "s_product": 1.0,
+        "s_rapid": 0.05,
+        "s_transform": 0.95
+      },
+      "evidence": [
+        "₹47,20,000 invoiced in and ₹47,55,400 invoiced out across 4 firms in Ring R93 over 45 days (<0.8% retained per hop).",
+        "Identical HSN 72085100 (Hot-Rolled Steel Plates) circulated through 4 trading hops without physical manufacturing transformation."
+      ],
+      "evidence_weight": 1.0,
+      "refs": [
+        "R93",
+        "INV-RT03-0004"
+      ],
+      "schema_version": 1,
+      "severity": "high",
+      "source": "live",
+      "status": "warn",
+      "verification_status": "independently_confirmed"
+    }
+  ],
+  "description": "4-firm circular carousel spacing hops 14-15 days apart across a 45-day window to suppress velocity signal s_rapid while circulating identical HSN 72085100 steel plates with <0.8% retention.",
+  "evidence": [
+    {
+      "buyer_id": "P-RT03-1",
+      "doc_date": "2026-08-12",
+      "doc_id": "D-PO-RT03",
+      "doc_no": "PO/RT03/26/044",
+      "doc_type": "purchase_order",
+      "evidence_weight": 1.0,
+      "invoice_id": "INV-RT03-0004",
+      "line_items": [
+        {
+          "cgst_bps": 0,
+          "description": "Hot-Rolled Steel Plates 12mm",
+          "hsn_sac": "72085100",
+          "igst_bps": 1800,
+          "is_service": false,
+          "line_no": 1,
+          "qty": 500,
+          "rate_paise": 80600,
+          "sgst_bps": 0,
+          "tax_paise": 7254000,
+          "taxable_paise": 40300000,
+          "total_paise": 47554000,
+          "unit": "MT"
+        }
+      ],
+      "payment_terms_days": 60,
+      "po_id": "D-PO-RT03",
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT03-4",
+      "source": "buyer_portal",
+      "total_paise": 47554000,
+      "valid_from": "2026-08-01",
+      "valid_until": "2026-09-30",
+      "verification_status": "independently_confirmed"
+    },
+    {
+      "buyer_id": "P-RT03-1",
+      "doc_date": "2026-08-14",
+      "doc_id": "D-GRN-RT03",
+      "doc_no": "GRN/RT03/26/049",
+      "doc_type": "grn",
+      "evidence_weight": 1.0,
+      "invoice_id": "INV-RT03-0004",
+      "line_items": [
+        {
+          "cgst_bps": 0,
+          "description": "Hot-Rolled Steel Plates 12mm",
+          "hsn_sac": "72085100",
+          "igst_bps": 1800,
+          "is_service": false,
+          "line_no": 1,
+          "qty": 500,
+          "rate_paise": 80600,
+          "sgst_bps": 0,
+          "tax_paise": 7254000,
+          "taxable_paise": 40300000,
+          "total_paise": 47554000,
+          "unit": "MT"
+        }
+      ],
+      "po_id": "D-PO-RT03",
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT03-4",
+      "source": "erp_webhook",
+      "total_paise": 47554000,
+      "verification_status": "independently_confirmed"
+    }
+  ],
+  "expected": {
+    "case_id": "rt_03_slow_ring_45d",
+    "expected_outcome": "review",
+    "failing_checks": [],
+    "warn_checks": [
+      "network.ring"
+    ]
+  },
+  "expected_outcome": "review",
+  "history": {
+    "allocations_paise": {},
+    "evidence_docs": [],
+    "invoices": [
+      {
+        "buyer_gstin": "24AABCR3002F1Z4",
+        "buyer_id": "P-RT03-2",
+        "cgst_paise": 0,
+        "doc_type": "invoice",
+        "due_date": "2026-08-30",
+        "financial_year": "2026-27",
+        "grand_total_paise": 47200000,
+        "igst_paise": 7200000,
+        "invoice_date": "2026-07-01",
+        "invoice_id": "INV-RT03-0001",
+        "invoice_no": "RT03/26-27/001",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 0,
+            "description": "Hot-Rolled Steel Plates 12mm",
+            "hsn_sac": "72085100",
+            "igst_bps": 1800,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 500,
+            "rate_paise": 80000,
+            "sgst_bps": 0,
+            "tax_paise": 7200000,
+            "taxable_paise": 40000000,
+            "total_paise": 47200000,
+            "unit": "MT"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "24",
+        "schema_version": 1,
+        "seller_gstin": "27AABCR3001E1Z1",
+        "seller_id": "P-RT03-1",
+        "sgst_paise": 0,
+        "subtotal_paise": 40000000,
+        "total_tax_paise": 7200000
+      },
+      {
+        "buyer_gstin": "33AABCR3003G1Z2",
+        "buyer_id": "P-RT03-3",
+        "cgst_paise": 0,
+        "doc_type": "invoice",
+        "due_date": "2026-09-14",
+        "financial_year": "2026-27",
+        "grand_total_paise": 47318000,
+        "igst_paise": 7218000,
+        "invoice_date": "2026-07-16",
+        "invoice_id": "INV-RT03-0002",
+        "invoice_no": "RT03/26-27/002",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 0,
+            "description": "Hot-Rolled Steel Plates 12mm",
+            "hsn_sac": "72085100",
+            "igst_bps": 1800,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 500,
+            "rate_paise": 80200,
+            "sgst_bps": 0,
+            "tax_paise": 7218000,
+            "taxable_paise": 40100000,
+            "total_paise": 47318000,
+            "unit": "MT"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "33",
+        "schema_version": 1,
+        "seller_gstin": "24AABCR3002F1Z4",
+        "seller_id": "P-RT03-2",
+        "sgst_paise": 0,
+        "subtotal_paise": 40100000,
+        "total_tax_paise": 7218000
+      },
+      {
+        "buyer_gstin": "36AABCR3004H1ZT",
+        "buyer_id": "P-RT03-4",
+        "cgst_paise": 0,
+        "doc_type": "invoice",
+        "due_date": "2026-09-29",
+        "financial_year": "2026-27",
+        "grand_total_paise": 47436000,
+        "igst_paise": 7236000,
+        "invoice_date": "2026-07-31",
+        "invoice_id": "INV-RT03-0003",
+        "invoice_no": "RT03/26-27/003",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 0,
+            "description": "Hot-Rolled Steel Plates 12mm",
+            "hsn_sac": "72085100",
+            "igst_bps": 1800,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 500,
+            "rate_paise": 80400,
+            "sgst_bps": 0,
+            "tax_paise": 7236000,
+            "taxable_paise": 40200000,
+            "total_paise": 47436000,
+            "unit": "MT"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "36",
+        "schema_version": 1,
+        "seller_gstin": "33AABCR3003G1Z2",
+        "seller_id": "P-RT03-3",
+        "sgst_paise": 0,
+        "subtotal_paise": 40200000,
+        "total_tax_paise": 7236000
+      },
+      {
+        "buyer_gstin": "27AABCR3001E1Z1",
+        "buyer_id": "P-RT03-1",
+        "cgst_paise": 0,
+        "doc_type": "invoice",
+        "due_date": "2026-10-14",
+        "financial_year": "2026-27",
+        "grand_total_paise": 47554000,
+        "igst_paise": 7254000,
+        "invoice_date": "2026-08-15",
+        "invoice_id": "INV-RT03-0004",
+        "invoice_no": "RT03/26-27/004",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 0,
+            "description": "Hot-Rolled Steel Plates 12mm",
+            "hsn_sac": "72085100",
+            "igst_bps": 1800,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 500,
+            "rate_paise": 80600,
+            "sgst_bps": 0,
+            "tax_paise": 7254000,
+            "taxable_paise": 40300000,
+            "total_paise": 47554000,
+            "unit": "MT"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "27",
+        "po_id": "D-PO-RT03",
+        "schema_version": 1,
+        "seller_gstin": "36AABCR3004H1ZT",
+        "seller_id": "P-RT03-4",
+        "sgst_paise": 0,
+        "subtotal_paise": 40300000,
+        "total_tax_paise": 7254000
+      }
+    ],
+    "metadata": {
+      "case_id": "rt_03_slow_ring_45d",
+      "redteam": true,
+      "ring_id": "R93"
+    },
+    "payments": [],
+    "reservations": [],
+    "versions": []
+  },
+  "invoice": {
+    "buyer_gstin": "27AABCR3001E1Z1",
+    "buyer_id": "P-RT03-1",
+    "cgst_paise": 0,
+    "doc_type": "invoice",
+    "due_date": "2026-10-14",
+    "financial_year": "2026-27",
+    "grand_total_paise": 47554000,
+    "igst_paise": 7254000,
+    "invoice_date": "2026-08-15",
+    "invoice_id": "INV-RT03-0004",
+    "invoice_no": "RT03/26-27/004",
+    "is_export_or_sez": false,
+    "line_items": [
+      {
+        "cgst_bps": 0,
+        "description": "Hot-Rolled Steel Plates 12mm",
+        "hsn_sac": "72085100",
+        "igst_bps": 1800,
+        "is_service": false,
+        "line_no": 1,
+        "qty": 500,
+        "rate_paise": 80600,
+        "sgst_bps": 0,
+        "tax_paise": 7254000,
+        "taxable_paise": 40300000,
+        "total_paise": 47554000,
+        "unit": "MT"
+      }
+    ],
+    "payment_terms_days": 60,
+    "place_of_supply_state": "27",
+    "po_id": "D-PO-RT03",
+    "schema_version": 1,
+    "seller_gstin": "36AABCR3004H1ZT",
+    "seller_id": "P-RT03-4",
+    "sgst_paise": 0,
+    "subtotal_paise": 40300000,
+    "total_tax_paise": 7254000
+  },
+  "parties": {
+    "P-RT03-1": {
+      "address": "Plot 9, Taloja MIDC",
+      "bank_account_hash": "6a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e01",
+      "cin": "U51909MH2020PTC340001",
+      "city": "Navi Mumbai",
+      "directors": [
+        "DIN-06003001"
+      ],
+      "gstin": "27AABCR3001E1Z1",
+      "industry_class": "trading",
+      "name": "Konkan Ferrous Mercantiles Pvt Ltd",
+      "pan": "AABCR3001E",
+      "party_id": "P-RT03-1",
+      "phone": "+91-22-27410001",
+      "pincode": "410208",
+      "schema_version": 1,
+      "state_code": "27"
+    },
+    "P-RT03-2": {
+      "address": "Survey 18, Vatva GIDC",
+      "bank_account_hash": "6a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e02",
+      "cin": "U51909GJ2020PTC112002",
+      "city": "Ahmedabad",
+      "directors": [
+        "DIN-06003002"
+      ],
+      "gstin": "24AABCR3002F1Z4",
+      "industry_class": "trading",
+      "name": "Sabarmati Steel Traders Pvt Ltd",
+      "pan": "AABCR3002F",
+      "party_id": "P-RT03-2",
+      "phone": "+91-79-25830002",
+      "pincode": "382445",
+      "schema_version": 1,
+      "state_code": "24"
+    },
+    "P-RT03-3": {
+      "address": "Plot 31, Ambattur Industrial Estate",
+      "bank_account_hash": "6a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e03",
+      "cin": "U51909TN2020PTC135003",
+      "city": "Chennai",
+      "directors": [
+        "DIN-06003003"
+      ],
+      "gstin": "33AABCR3003G1Z2",
+      "industry_class": "trading",
+      "name": "Coromandel Metal Agencies Pvt Ltd",
+      "pan": "AABCR3003G",
+      "party_id": "P-RT03-3",
+      "phone": "+91-44-26250003",
+      "pincode": "600058",
+      "schema_version": 1,
+      "state_code": "33"
+    },
+    "P-RT03-4": {
+      "address": "Plot 7, Jeedimetla Industrial Area",
+      "bank_account_hash": "6a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e04",
+      "cin": "U51909TG2020PTC141004",
+      "city": "Hyderabad",
+      "directors": [
+        "DIN-06003004"
+      ],
+      "gstin": "36AABCR3004H1ZT",
+      "industry_class": "trading",
+      "name": "Golconda Alloy Distributors Pvt Ltd",
+      "pan": "AABCR3004H",
+      "party_id": "P-RT03-4",
+      "phone": "+91-40-23090004",
+      "pincode": "500055",
+      "schema_version": 1,
+      "state_code": "36"
+    }
+  },
+  "redteam_hypothesis": "Slowing a 4-hop circular ring down to 45 days suppresses s_rapid, but multi-signal combination (s_flow, s_product, s_isolation, s_transform) still exceeds medium/high network threshold and routes to review.",
+  "request": {
+    "buyer_id": "P-RT03-1",
+    "invoice_id": "INV-RT03-0004",
+    "lender_id": "L2",
+    "request_id": "REQ-RT03-0004",
+    "requested_amount_paise": 47554000,
+    "schema_version": 1,
+    "seller_id": "P-RT03-4",
+    "seller_signature_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "state": "submitted",
+    "submitted_at": "2026-08-15T12:00:00Z",
+    "tenor_days": 60,
+    "version_id": "V-RT03-0004-1"
+  },
+  "version": {
+    "created_at": "2026-08-15T11:55:00Z",
+    "field_provenance": {},
+    "field_root": "c1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f03",
+    "field_salts": {},
+    "file_sha256": "d1e2d3c4b5a69788695a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d03",
+    "invoice_id": "INV-RT03-0004",
+    "invoice_identity": "6c91b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e03",
+    "kind": "initial",
+    "schema_version": 1,
+    "tamper_hints": [],
+    "version_id": "V-RT03-0004-1",
+    "version_no": 1
+  }
+}

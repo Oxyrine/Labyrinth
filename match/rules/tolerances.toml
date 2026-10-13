@@ -1,0 +1,4 @@
+# Three-way matching tolerance policy (strict integers in bps and paise)
+qty_tolerance_bps = 200
+rate_tolerance_bps = 100
+total_tolerance_paise = 100

@@ -1,0 +1,41 @@
+{
+  "ewaybill_thresholds": {
+    "mandatory_invoice_paise": 5000000,
+    "max_speed_kmh": 80,
+    "road_distance_factor": 1.3
+  },
+  "locked_at": "2026-10-13T00:00:00Z",
+  "matching_tolerances": {
+    "qty_bps": 200,
+    "rate_bps": 100,
+    "total_paise": 100
+  },
+  "near_duplicate_thresholds": {
+    "amount_tolerance_bps": 100,
+    "max_date_gap_days": 7,
+    "min_line_jaccard": 0.8
+  },
+  "network_signal_weights": {
+    "s_flow": 0.2,
+    "s_isolation": 0.1,
+    "s_movement": 0.15,
+    "s_product": 0.15,
+    "s_rapid": 0.08,
+    "s_related": 0.12,
+    "s_timing": 0.12,
+    "s_transform": 0.08
+  },
+  "network_tier_thresholds": {
+    "high": 0.6,
+    "medium": 0.3,
+    "min_active_signals_for_high": 2
+  },
+  "regime_locked_before": "B",
+  "schema_version": 1,
+  "scorecard_grade_cutoffs": {
+    "A": 85,
+    "B": 70,
+    "C": 55,
+    "D": 40
+  }
+}

@@ -8,5 +8,5 @@ __pycache__/
 *.db-shm
 *.db-wal
 data/out/blobs/
-data/out/keys/*.key
+data/out/keys/
 .DS_Store

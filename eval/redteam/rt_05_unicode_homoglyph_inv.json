@@ -1,0 +1,310 @@
+{
+  "case_id": "rt_05_unicode_homoglyph_inv",
+  "case_type": "near_dup_INV-O042",
+  "checks": [
+    {
+      "check": "dedup.near_dup",
+      "details": {
+        "amount_diff_bps": 40,
+        "date_gap_days": 2,
+        "jaccard": 1.0,
+        "matched_invoice_id": "INV-RT05-ORIG",
+        "normalized_invoice_no": "INV0088"
+      },
+      "evidence": [
+        "Invoice number 'lNV-O088' on INV-RT05-DUP normalizes to '1NV-0088', matching prior invoice INV-RT05-ORIG ('INV-0088') within 0.40% amount (₹10,04,000 vs ₹10,00,000), 2 days, and 1.00 line-item Jaccard similarity."
+      ],
+      "evidence_weight": 1.0,
+      "refs": [
+        "INV-RT05-DUP",
+        "INV-RT05-ORIG"
+      ],
+      "schema_version": 1,
+      "severity": "high",
+      "source": "live",
+      "status": "warn",
+      "verification_status": "independently_confirmed"
+    }
+  ],
+  "description": "Seller resubmits an already-financed invoice ('INV-0088') as 'lNV-O088' (substituting lowercase 'l' for 'I' and capital 'O' for '0') with a 0.4% amount perturbation 2 days later to bypass exact HMAC identity matching.",
+  "evidence": [
+    {
+      "buyer_id": "P-RT05-B",
+      "doc_date": "2026-08-01",
+      "doc_id": "D-PO-RT05",
+      "doc_no": "PO/RT05/26/088",
+      "doc_type": "purchase_order",
+      "evidence_weight": 1.0,
+      "invoice_id": "INV-RT05-DUP",
+      "line_items": [
+        {
+          "cgst_bps": 900,
+          "description": "High-Tensile Forged Axle Shafts",
+          "hsn_sac": "87085000",
+          "igst_bps": 0,
+          "is_service": false,
+          "line_no": 1,
+          "qty": 1000,
+          "rate_paise": 85085,
+          "sgst_bps": 900,
+          "tax_paise": 15315300,
+          "taxable_paise": 85085000,
+          "total_paise": 100400300,
+          "unit": "NOS"
+        }
+      ],
+      "payment_terms_days": 60,
+      "po_id": "D-PO-RT05",
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT05-S",
+      "source": "buyer_portal",
+      "total_paise": 100400300,
+      "valid_from": "2026-08-01",
+      "valid_until": "2026-09-30",
+      "verification_status": "independently_confirmed"
+    },
+    {
+      "buyer_id": "P-RT05-B",
+      "doc_date": "2026-08-10",
+      "doc_id": "D-GRN-RT05",
+      "doc_no": "GRN/RT05/26/088",
+      "doc_type": "grn",
+      "evidence_weight": 1.0,
+      "invoice_id": "INV-RT05-DUP",
+      "line_items": [
+        {
+          "cgst_bps": 900,
+          "description": "High-Tensile Forged Axle Shafts",
+          "hsn_sac": "87085000",
+          "igst_bps": 0,
+          "is_service": false,
+          "line_no": 1,
+          "qty": 1000,
+          "rate_paise": 85085,
+          "sgst_bps": 900,
+          "tax_paise": 15315300,
+          "taxable_paise": 85085000,
+          "total_paise": 100400300,
+          "unit": "NOS"
+        }
+      ],
+      "po_id": "D-PO-RT05",
+      "rate_caps_paise": {},
+      "schema_version": 1,
+      "seller_id": "P-RT05-S",
+      "source": "erp_webhook",
+      "total_paise": 100400300,
+      "verification_status": "independently_confirmed"
+    }
+  ],
+  "expected": {
+    "case_id": "rt_05_unicode_homoglyph_inv",
+    "expected_outcome": "review",
+    "failing_checks": [],
+    "warn_checks": [
+      "dedup.near_dup"
+    ]
+  },
+  "expected_outcome": "review",
+  "history": {
+    "allocations_paise": {},
+    "evidence_docs": [],
+    "invoices": [
+      {
+        "buyer_gstin": "27AABCR5002M1ZF",
+        "buyer_id": "P-RT05-B",
+        "cgst_paise": 7627140,
+        "doc_type": "invoice",
+        "due_date": "2026-10-10",
+        "financial_year": "2026-27",
+        "grand_total_paise": 100000280,
+        "igst_paise": 0,
+        "invoice_date": "2026-08-11",
+        "invoice_id": "INV-RT05-ORIG",
+        "invoice_no": "INV-0088",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 900,
+            "description": "High-Tensile Forged Axle Shafts",
+            "hsn_sac": "87085000",
+            "igst_bps": 0,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 1000,
+            "rate_paise": 84746,
+            "sgst_bps": 900,
+            "tax_paise": 15254280,
+            "taxable_paise": 84746000,
+            "total_paise": 100000280,
+            "unit": "NOS"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "27",
+        "po_id": "D-PO-RT05",
+        "schema_version": 1,
+        "seller_gstin": "27AABCR5001L1ZI",
+        "seller_id": "P-RT05-S",
+        "sgst_paise": 7627140,
+        "subtotal_paise": 84746000,
+        "total_tax_paise": 15254280
+      },
+      {
+        "buyer_gstin": "27AABCR5002M1ZF",
+        "buyer_id": "P-RT05-B",
+        "cgst_paise": 7657650,
+        "doc_type": "invoice",
+        "due_date": "2026-10-12",
+        "financial_year": "2026-27",
+        "grand_total_paise": 100400300,
+        "igst_paise": 0,
+        "invoice_date": "2026-08-13",
+        "invoice_id": "INV-RT05-DUP",
+        "invoice_no": "lNV-O088",
+        "is_export_or_sez": false,
+        "line_items": [
+          {
+            "cgst_bps": 900,
+            "description": "High-Tensile Forged Axle Shafts",
+            "hsn_sac": "87085000",
+            "igst_bps": 0,
+            "is_service": false,
+            "line_no": 1,
+            "qty": 1000,
+            "rate_paise": 85085,
+            "sgst_bps": 900,
+            "tax_paise": 15315300,
+            "taxable_paise": 85085000,
+            "total_paise": 100400300,
+            "unit": "NOS"
+          }
+        ],
+        "payment_terms_days": 60,
+        "place_of_supply_state": "27",
+        "po_id": "D-PO-RT05",
+        "schema_version": 1,
+        "seller_gstin": "27AABCR5001L1ZI",
+        "seller_id": "P-RT05-S",
+        "sgst_paise": 7657650,
+        "subtotal_paise": 85085000,
+        "total_tax_paise": 15315300
+      }
+    ],
+    "metadata": {
+      "case_id": "rt_05_unicode_homoglyph_inv",
+      "redteam": true
+    },
+    "payments": [],
+    "reservations": [],
+    "versions": []
+  },
+  "invoice": {
+    "buyer_gstin": "27AABCR5002M1ZF",
+    "buyer_id": "P-RT05-B",
+    "cgst_paise": 7657650,
+    "doc_type": "invoice",
+    "due_date": "2026-10-12",
+    "financial_year": "2026-27",
+    "grand_total_paise": 100400300,
+    "igst_paise": 0,
+    "invoice_date": "2026-08-13",
+    "invoice_id": "INV-RT05-DUP",
+    "invoice_no": "lNV-O088",
+    "is_export_or_sez": false,
+    "line_items": [
+      {
+        "cgst_bps": 900,
+        "description": "High-Tensile Forged Axle Shafts",
+        "hsn_sac": "87085000",
+        "igst_bps": 0,
+        "is_service": false,
+        "line_no": 1,
+        "qty": 1000,
+        "rate_paise": 85085,
+        "sgst_bps": 900,
+        "tax_paise": 15315300,
+        "taxable_paise": 85085000,
+        "total_paise": 100400300,
+        "unit": "NOS"
+      }
+    ],
+    "payment_terms_days": 60,
+    "place_of_supply_state": "27",
+    "po_id": "D-PO-RT05",
+    "schema_version": 1,
+    "seller_gstin": "27AABCR5001L1ZI",
+    "seller_id": "P-RT05-S",
+    "sgst_paise": 7657650,
+    "subtotal_paise": 85085000,
+    "total_tax_paise": 15315300
+  },
+  "parties": {
+    "P-RT05-B": {
+      "address": "Plot 101, Ranjangaon MIDC",
+      "bank_account_hash": "4a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e02",
+      "cin": "U29300MH2013PLC241002",
+      "city": "Pune",
+      "directors": [
+        "DIN-04005002"
+      ],
+      "gstin": "27AABCR5002M1ZF",
+      "industry_class": "manufacturing",
+      "name": "Sahyadri Commercial Vehicles Ltd",
+      "pan": "AABCR5002M",
+      "party_id": "P-RT05-B",
+      "phone": "+91-20-27905002",
+      "pincode": "412220",
+      "schema_version": 1,
+      "state_code": "27"
+    },
+    "P-RT05-S": {
+      "address": "Plot 23, Chakan Industrial Area Phase I",
+      "bank_account_hash": "4a01b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e01",
+      "cin": "U28910MH2017PTC295001",
+      "city": "Pune",
+      "directors": [
+        "DIN-04005001"
+      ],
+      "gstin": "27AABCR5001L1ZI",
+      "industry_class": "manufacturing",
+      "name": "Maval Forging Works Pvt Ltd",
+      "pan": "AABCR5001L",
+      "party_id": "P-RT05-S",
+      "phone": "+91-20-27905001",
+      "pincode": "410501",
+      "schema_version": 1,
+      "state_code": "27"
+    }
+  },
+  "redteam_hypothesis": "Confusable homoglyph substitution ('l' for 'I' and 'O' for '0' in 'lNV-O088') with a 0.4% amount perturbation is caught by aggressive character normalization and Jaccard line-item matching in dedup.near_dup.",
+  "request": {
+    "buyer_id": "P-RT05-B",
+    "invoice_id": "INV-RT05-DUP",
+    "lender_id": "L2",
+    "request_id": "REQ-RT05-0002",
+    "requested_amount_paise": 100400300,
+    "schema_version": 1,
+    "seller_id": "P-RT05-S",
+    "seller_signature_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "state": "submitted",
+    "submitted_at": "2026-08-13T16:10:00Z",
+    "tenor_days": 60,
+    "version_id": "V-RT05-DUP-1"
+  },
+  "version": {
+    "created_at": "2026-08-13T16:05:00Z",
+    "field_provenance": {},
+    "field_root": "e1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f05",
+    "field_salts": {},
+    "file_sha256": "b1e2d3c4b5a69788695a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d05",
+    "invoice_id": "INV-RT05-DUP",
+    "invoice_identity": "8e91b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e05",
+    "kind": "initial",
+    "schema_version": 1,
+    "tamper_hints": [],
+    "version_id": "V-RT05-DUP-1",
+    "version_no": 1
+  }
+}

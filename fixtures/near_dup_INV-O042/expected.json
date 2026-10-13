@@ -1,0 +1,8 @@
+{
+  "case_id": "near_dup_INV-O042",
+  "expected_outcome": "review",
+  "failing_checks": [],
+  "warn_checks": [
+    "dedup.near_dup"
+  ]
+}
