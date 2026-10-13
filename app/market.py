@@ -4,6 +4,7 @@ network check flagged. Built from pipeline outputs only (world, invoices, decisi
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict
 from itertools import combinations
 from pathlib import Path
@@ -35,7 +36,8 @@ def _flagged_rings(decisions_path: Path) -> list[dict[str, Any]]:
             "score": ring.get("score"),
             "exposure": format_inr(int(ring.get("ring_exposure_paise", 0))),
             "retained_pct": {k: round(v, 1) for k, v in (ring.get("retained_pct_by_firm") or {}).items()},
-            "evidence": (ring.get("evidence") or [])[:3],
+            "signals": {k: round(v, 2) for k, v in (ring.get("signals") or {}).items() if v is not None},
+            "evidence": [re.sub(r"Ring R\d+", f"Loop M{n:02d}", s) for s in (ring.get("evidence") or [])],
             "hops": [{"from": h["from"], "to": h["to"]} for h in ring.get("hops", [])],
         })
     return out

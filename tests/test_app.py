@@ -186,4 +186,5 @@ def test_market_map_comes_from_pipeline_output_not_labels(client: TestClient) ->
     assert m["rings"] and all(r["tier"] in ("medium", "high") and len(r["members"]) >= 3 for r in m["rings"])
     ids = {n["id"] for n in m["nodes"]}
     assert all(set(r["members"]) <= ids for r in m["rings"])
+    assert all(r["ring_id"] in r["evidence"][0] for r in m["rings"])  # the sentence names the same loop the map shows
     assert "ground_truth" not in (ROOT / "app" / "market.py").read_text(encoding="utf-8")

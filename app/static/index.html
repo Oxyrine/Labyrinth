@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Yellowtail&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app.css?v=20261013-5">
+  <link rel="stylesheet" href="app.css?v=20261013-13">
 </head>
 <body>
   <a href="#main-workspace" class="skip-link">Skip to main workspace</a>
@@ -38,8 +38,7 @@
       <div class="global-stat"><span class="gs-val risk" id="gs-review">—</span><span class="gs-label risk">Need a person</span></div>
     </div>
     <div class="topbar-right">
-      <div class="connection-pill" id="connection-badge"><span class="status-dot" id="connection-dot"></span><span id="connection-text">Connecting</span></div>
-      <label class="role-selector-wrap" for="role-switcher"><span class="role-label" title="Pick who you are acting as. Each action only works for the role that owns it.">Acting as</span><select id="role-switcher" class="role-select" aria-label="Switch active role token">
+      <select id="role-switcher" hidden aria-hidden="true" tabindex="-1">
         <option value="lender:L1">Lender · Consortium Bank L1</option>
         <option value="lender:L2">Lender · Consortium Bank L2</option>
         <option value="seller:P-0001">Seller · Sahyadri Castings (P-0001)</option>
@@ -47,7 +46,7 @@
         <option value="reviewer:REV-1">Reviewer · Senior Credit Officer (REV-1)</option>
         <option value="reviewer:REV-2">Reviewer · Second Sign-off Officer (REV-2)</option>
         <option value="auditor:AUD-1">Auditor · Cryptographic Verifier (AUD-1)</option>
-      </select></label>
+      </select>
       <button type="button" id="start-tour-btn" class="btn">Guide me</button>
     </div>
   </header>
@@ -348,19 +347,17 @@
 
     <!-- NETWORK MAP -->
     <section id="panel-network" role="tabpanel" aria-labelledby="tab-btn-network" class="tab-panel hidden">
+      <div class="portfolio-stats net-stats" aria-label="Market at a glance">
+        <div class="portfolio-stat"><span>Firms</span><strong id="net-stat-firms">—</strong><small>In the generated market</small></div>
+        <div class="portfolio-stat"><span>Invoices</span><strong id="net-stat-invoices">—</strong><small>Between those firms</small></div>
+        <div class="portfolio-stat"><span>Flagged loops <i class="metric-dot red"></i></span><strong id="net-stat-loops">—</strong><small>Found by the network check</small></div>
+        <div class="portfolio-stat"><span>Firms in a loop</span><strong id="net-stat-flagged">—</strong><small>Worth a person's time</small></div>
+      </div>
       <div class="card net-card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">Every firm and how they connect</h2>
-            <p class="card-subtitle">Lines are invoices between firms. Dashed lines join firms that share a director, bank account, address or similar. Red marks loops the network check flagged.</p>
-          </div>
-          <span class="badge badge-info" id="net-source">Loading…</span>
-        </div>
-        <div id="net-status" class="status-banner hidden" role="status"></div>
         <div class="net-controls">
           <div class="net-toggles" role="group" aria-label="Layers">
             <button type="button" id="net-toggle-trade" class="btn btn-sm active" aria-pressed="true">Invoices</button>
-            <button type="button" id="net-toggle-related" class="btn btn-sm active" aria-pressed="true">Related firms</button>
+            <button type="button" id="net-toggle-related" class="btn btn-sm" aria-pressed="false">Related firms</button>
             <button type="button" id="net-toggle-flagged" class="btn btn-sm" aria-pressed="false">Flagged only</button>
           </div>
           <label class="sr-only" for="net-ring-select">Show one flagged loop</label>
@@ -370,30 +367,32 @@
             <option value="all">All industries</option><option value="manufacturing">Manufacturing</option><option value="trading">Trading</option><option value="distribution">Distribution</option><option value="services">Services</option>
           </select>
           <label class="search-field net-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="net-search" type="search" placeholder="Find a firm…" aria-label="Find a firm by name, ID or GSTIN"></label>
+          <span class="badge badge-info" id="net-source">Loading…</span>
           <div class="net-zoom">
             <button type="button" id="net-zoom-out" class="btn btn-sm" aria-label="Zoom out">−</button>
             <span id="net-zoom-val" class="mono-id">100%</span>
             <button type="button" id="net-zoom-in" class="btn btn-sm" aria-label="Zoom in">+</button>
-            <button type="button" id="net-zoom-reset" class="btn btn-sm">Fit</button>
+            <button type="button" id="net-zoom-reset" class="btn btn-sm">1:1</button>
             <button type="button" id="net-reset-btn" class="btn btn-sm btn-ghost">Reset</button>
           </div>
         </div>
-        <div class="network-layout">
-          <div class="network-canvas-wrap">
-            <svg id="network-svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of firms, invoices between them and flagged loops"></svg>
+        <div id="net-status" class="status-banner hidden" role="status"></div>
+        <div id="net-layout" class="network-layout">
+          <div id="net-canvas" class="network-canvas-wrap">
+            <svg id="network-svg" viewBox="0 0 1800 1060" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of firms, the invoices between them and flagged loops"></svg>
+            <div id="net-tip" class="net-tip hidden" role="tooltip"></div>
             <div class="net-legend">
-              <span><i class="lg-dot" style="background:#C8912F"></i>Manufacturing</span>
-              <span><i class="lg-dot" style="background:#9A86B0"></i>Trading</span>
-              <span><i class="lg-dot" style="background:#5F9179"></i>Distribution</span>
-              <span><i class="lg-dot" style="background:#9A8F7E"></i>Services</span>
-              <span><i class="lg-line" style="background:#D65A5A"></i>Flagged loop</span>
+              <span><i class="lg-dot"></i>Firm</span>
+              <span><i class="lg-dot red"></i>Firm in a flagged loop (gold ring)</span>
+              <span><i class="lg-line"></i>Invoices</span>
+              <span><i class="lg-line red"></i>Flagged loop</span>
               <span><i class="lg-line dashed"></i>Related firms</span>
               <span class="net-hint">Scroll to zoom · drag to pan · click a firm</span>
             </div>
           </div>
-          <aside id="network-rail" class="network-rail" aria-label="Details" aria-live="polite"></aside>
+          <aside id="network-rail" class="network-rail hidden" aria-label="Details" aria-live="polite"></aside>
         </div>
-        <p class="policy-notice">This is a generated market, separate from the 25 demo invoices. Flagged loops come from running the real network check on it. A flag means "worth a person's time", not "proven fake".</p>
+        <p class="policy-notice">A generated market, separate from the 25 demo invoices. Flagged loops come from running the real network check on it. A flag means worth a person's time, not proven fake.</p>
       </div>
     </section>
 
@@ -517,15 +516,15 @@
   <footer class="workspace-footer"><span><span class="footer-dot"></span> Labyrinth · Verify. Decide. Trace.</span><span>Demo evidence · Illustrative pricing · Simulated anchoring unless configured</span></footer></main>
   </div>
 
-  <script src="data.js?v=20261013-5"></script>
-  <script src="ring.js?v=20261013-5"></script>
-  <script src="workspace.js?v=20261013-5"></script>
-  <script src="seller.js?v=20261013-5"></script>
-  <script src="lender.js?v=20261013-5"></script>
-  <script src="queue.js?v=20261013-5"></script>
-  <script src="verifier.js?v=20261013-5"></script>
-  <script src="network.js?v=20261013-5"></script>
-  <script src="tour.js?v=20261013-5"></script>
-  <script src="landing.js?v=20261013-5"></script>
+  <script src="data.js?v=20261013-13"></script>
+  <script src="ring.js?v=20261013-13"></script>
+  <script src="workspace.js?v=20261013-13"></script>
+  <script src="seller.js?v=20261013-13"></script>
+  <script src="lender.js?v=20261013-13"></script>
+  <script src="queue.js?v=20261013-13"></script>
+  <script src="verifier.js?v=20261013-13"></script>
+  <script src="network.js?v=20261013-13"></script>
+  <script src="tour.js?v=20261013-13"></script>
+  <script src="landing.js?v=20261013-13"></script>
 </body>
 </html>
