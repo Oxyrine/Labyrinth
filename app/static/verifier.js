@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var UI = window.TesseraUI;
+  var UI = window.LabyrinthUI;
 
   function renderAuditVerification(proof) {
     if (!proof) return;
@@ -27,19 +27,8 @@
     var isAnchored = proof.anchoring === "anchored";
     if (ancBox && ancStatus && ancDetail) {
       ancBox.className = "answer-box " + (isAnchored ? "verified" : "unavailable");
-      ancStatus.textContent = String(proof.anchoring || "anchored").toUpperCase();
+      ancStatus.textContent = String(proof.anchoring || "pending").toUpperCase() + (proof.anchor_mode === "simulated" ? " · SIMULATED" : "");
       ancDetail.textContent = proof.anchoring_detail || "";
-    }
-
-    // Also update the global header banner badge #2
-    var globalInt = document.getElementById("banner-badge-integrity");
-    if (globalInt) {
-      globalInt.textContent =
-        "INTEGRITY: " +
-        (isVerified ? "VERIFIED" : "FAILED (" + (proof.failed_file || "BLOB") + ")") +
-        " · ANCHOR: " +
-        String(proof.anchoring || "anchored").toUpperCase();
-      globalInt.className = "badge " + (isVerified ? (isAnchored ? "badge-pass" : "badge-warn") : "badge-fail");
     }
 
     var discBox = document.getElementById("audit-disclosure-box");
@@ -53,14 +42,16 @@
       { k: "Anchored Batch Merkle Root", v: proof.merkle_root || "—" },
       { k: "Redacted / Unrevealed Fields", v: (sd.hidden_fields || []).join(", ") + " (salts withheld)" },
     ];
-    rows.forEach(function (r) {
-      discBox.appendChild(
+    var proofDetails = UI.el("details", {className:"calculation-details"}, [UI.el("summary", {text:"Inspect proof hashes and hidden fields"})]);
+    rows.forEach(function (r, index) {
+      (index === 0 ? discBox : proofDetails).appendChild(
         UI.el("div", { style: "margin-bottom:6px;" }, [
           UI.el("span", { className: "extracted-key", text: r.k + ": " }),
           UI.el("span", { style: "font-family:var(--font-mono);font-size:11.5px;color:var(--text-primary);", text: r.v }),
         ])
       );
     });
+    discBox.appendChild(proofDetails);
   }
 
   function setOfflineNotice() {
@@ -100,10 +91,10 @@
 
   function buildBreakitPayload() {
     return {
-      ewb_speed_kmh: Number(document.getElementById("breakit-speed-input").value || 410),
-      retained_pct: Number(document.getElementById("breakit-retained-input").value || 0.7),
-      links: Number(document.getElementById("breakit-links-input").value || 2),
-      total_days: Number(document.getElementById("breakit-days-input").value || 2),
+      ewb_speed_kmh: Number(document.getElementById("breakit-speed-input").value === "" ? 410 : document.getElementById("breakit-speed-input").value),
+      retained_pct: Number(document.getElementById("breakit-retained-input").value === "" ? 0.7 : document.getElementById("breakit-retained-input").value),
+      links: Number(document.getElementById("breakit-links-input").value === "" ? 2 : document.getElementById("breakit-links-input").value),
+      total_days: Number(document.getElementById("breakit-days-input").value === "" ? 2 : document.getElementById("breakit-days-input").value),
       hsn_transformation: document.getElementById("breakit-transform-select").value === "true",
     };
   }
@@ -116,7 +107,7 @@
 
     panel.appendChild(
       UI.el("div", { style: "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;" }, [
-        UI.el("strong", { text: "Live Network Score: " + Number(res.score || 0).toFixed(4) + " -> " + String(res.outcome_recommendation || "").toUpperCase() }),
+        UI.el("strong", { text: "Network score: " + Number(res.score || 0).toFixed(4) + " -> " + String(res.outcome_recommendation || "").toUpperCase() }),
         UI.el("span", { className: "badge " + badgeClass, text: "TIER: " + tier }),
       ])
     );
@@ -125,7 +116,7 @@
     (res.evidence || []).forEach(function (line) {
       ul.appendChild(UI.el("li", { text: line }));
     });
-    panel.appendChild(ul);
+    panel.appendChild(UI.el("details", {className:"calculation-details"}, [UI.el("summary", {text:"Inspect network evidence"}), ul]));
 
     var svgBox = document.getElementById("breakit-ring-svg");
     if (svgBox && res.ring_graph) {
@@ -317,7 +308,7 @@
     });
   }
 
-  window.TesseraVerifier = {
+  window.LabyrinthVerifier = {
     init: initVerifierTab,
     verifyCurrentTarget: verifyCurrentTarget,
     renderEvalSummary: renderEvalSummary,

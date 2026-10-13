@@ -62,7 +62,7 @@ class AnchorRPCClient:
         self.network_off = bool(off)
 
     def _effective_rpc_url(self) -> str:
-        env_url = os.environ.get("TESSERA_RPC", "").strip()
+        env_url = os.environ.get("LABYRINTH_RPC", "").strip()
         if env_url:
             return env_url
         if self.rpc_url:

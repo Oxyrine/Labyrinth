@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var UI = window.TesseraUI;
+  var UI = window.LabyrinthUI;
   var currentStepIndex = 0;
 
   var TOUR_STEPS = [
@@ -28,8 +28,8 @@
       tab: "queue",
       caseId: "concurrent_reservation",
       onActivate: function () {
-        if (window.TesseraQueue && window.TesseraQueue.triggerRace) {
-          window.TesseraQueue.triggerRace();
+        if (window.LabyrinthQueue && window.LabyrinthQueue.triggerRace) {
+          window.LabyrinthQueue.triggerRace();
         }
       },
     },
@@ -73,7 +73,7 @@
       narrative:
         "The report shows per-case-type detection and false-review rates on synthetic data, the rules-only baseline against baseline plus network, and the plausible forgeries we miss on purpose. The Break-It box re-runs the real network check on a ring you shape yourself.",
       quote:
-        "Stage Line: \"No software proves that physical goods moved if seller, buyer, and transporter collude — Tessera raises fabrication cost and routes anomalies to human reviewers with exact numerical evidence.\"",
+        "Stage Line: \"No software proves that physical goods moved if seller, buyer, and transporter collude — Labyrinth raises fabrication cost and routes anomalies to human reviewers with exact numerical evidence.\"",
       tab: "verifier",
       caseId: "legit_circular",
     },
@@ -126,8 +126,8 @@
 
   function activateTourStep() {
     var s = TOUR_STEPS[currentStepIndex];
-    if (window.TesseraLender && window.TesseraLender.loadCase && s.caseId) {
-      window.TesseraLender.loadCase(s.caseId);
+    if (window.LabyrinthLender && window.LabyrinthLender.loadCase && s.caseId) {
+      window.LabyrinthLender.loadCase(s.caseId);
     }
     UI.switchTab(s.tab);
     if (typeof s.onActivate === "function") {
@@ -161,6 +161,9 @@
         }
       });
     }
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && drawer && !drawer.classList.contains("hidden")) { drawer.classList.add("hidden"); if (startBtn) startBtn.focus(); }
+    });
     if (closeBtn && drawer) {
       closeBtn.addEventListener("click", function () {
         drawer.classList.add("hidden");
@@ -187,9 +190,9 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     initTourAndNavigation();
-    if (window.TesseraSeller && window.TesseraSeller.init) window.TesseraSeller.init();
-    if (window.TesseraLender && window.TesseraLender.init) window.TesseraLender.init();
-    if (window.TesseraQueue && window.TesseraQueue.init) window.TesseraQueue.init();
-    if (window.TesseraVerifier && window.TesseraVerifier.init) window.TesseraVerifier.init();
+    if (window.LabyrinthSeller && window.LabyrinthSeller.init) window.LabyrinthSeller.init();
+    if (window.LabyrinthLender && window.LabyrinthLender.init) window.LabyrinthLender.init();
+    if (window.LabyrinthQueue && window.LabyrinthQueue.init) window.LabyrinthQueue.init();
+    if (window.LabyrinthVerifier && window.LabyrinthVerifier.init) window.LabyrinthVerifier.init();
   });
 })();

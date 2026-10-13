@@ -36,7 +36,7 @@ def build_snapshot() -> dict:
 def write_offline_js(path: Path = OUT) -> Path:
     snapshot = build_snapshot()
     text = json.dumps(snapshot, sort_keys=True, ensure_ascii=False)
-    path.write_text("window.TESSERA_OFFLINE_DATA = " + text + ";\n", encoding="utf-8")
+    path.write_text("window.LABYRINTH_OFFLINE_DATA = " + text + ";\n", encoding="utf-8")
     return path
 
 

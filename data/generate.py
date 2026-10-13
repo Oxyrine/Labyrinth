@@ -158,7 +158,7 @@ def generate_regime(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate Tessera deterministic synthetic economy.")
+    parser = argparse.ArgumentParser(description="Generate Labyrinth deterministic synthetic economy.")
     parser.add_argument("--regime", choices=["A", "B"], default="A", help="Economy regime (A or B)")
     parser.add_argument("--seed", type=int, default=None, help="Deterministic RNG seed (default: 2601 for A, 2602 for B)")
     parser.add_argument("--json-only", action="store_true", help="Skip PDF and scan rendering")

@@ -37,7 +37,7 @@ def compute_invoice_identity(
 ) -> str:
     """Compute HMAC-SHA256 invoice identity over minimally normalized (gstin, fy, doc_type, invoice_no)."""
     if key is None:
-        env_key = os.environ.get("TESSERA_IDENTITY_KEY", "")
+        env_key = os.environ.get("LABYRINTH_IDENTITY_KEY", "")
         key_bytes = env_key.encode("utf-8") if env_key else DEFAULT_IDENTITY_KEY
     elif isinstance(key, str):
         key_bytes = key.encode("utf-8")
@@ -55,7 +55,7 @@ def compute_invoice_identity(
 
 
 def _get_dedup_source() -> CheckSource:
-    val = os.environ.get("TESSERA_DEDUP_LIVE", "1").strip().lower()
+    val = os.environ.get("LABYRINTH_DEDUP_LIVE", "1").strip().lower()
     if val in ("0", "false", "fixture", "no"):
         return CheckSource.FIXTURE
     return CheckSource.LIVE

@@ -6,7 +6,7 @@ Nothing here decides an outcome; it wires modules together and reshapes their ou
 
 Demo-only simplifications (all surfaced in the UI):
 - party/lender/buyer signing keys are derived from a public demo seed (`DEMO_KEY_SEED`); production needs a KMS;
-- the anchor "chain" is a local simulated contract unless `TESSERA_RPC` (+ `TESSERA_ANCHOR_KEY`) is set;
+- the anchor "chain" is a local simulated contract unless `LABYRINTH_RPC` (+ `LABYRINTH_ANCHOR_KEY`) is set;
 - fixture cases carry deterministic stand-in file bytes; uploaded PDFs are stored exactly as received;
 - the demo clock follows each request's `submitted_at` so fixture dates stay consistent.
 """
@@ -79,6 +79,14 @@ from workflow import (
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURES_DIR = ROOT / "fixtures"
 DEMO_KEY_SEED = 2601
+ATTACH_TYPES = {"po": "purchase_order", "grn": "grn", "cnt": "contract", "ewb": "eway_bill"}
+# Checks that cannot run when the seller has not (yet) provided a supporting document.
+NOT_PROVIDED = {
+    "po": ["match.three_way", "match.over_invoicing", "match.ordering.dates"],
+    "grn": ["match.three_way.grn_presence", "match.three_way.qty", "match.three_way.total", "match.ordering.dates"],
+    "cnt": ["match.contract.terms"],
+    "ewb": ["match.ewaybill"],
+}
 TIER_RANK = {Tier.HIGH.value: 3, Tier.MEDIUM.value: 2, Tier.LOW.value: 1}
 
 # (fixture folder, step number, step label, one-line description). Order = demo script order.
@@ -114,7 +122,7 @@ def _parse(ts: str) -> datetime:
 
 def _standin_file(sha: str) -> bytes:
     """Deterministic stand-in for a fixture's original file (demo only)."""
-    return b"%PDF-1.4\n% tessera demo stand-in for fixture file " + sha.encode("ascii") + b"\n%%EOF\n"
+    return b"%PDF-1.4\n% labyrinth demo stand-in for fixture file " + sha.encode("ascii") + b"\n%%EOF\n"
 
 
 class _State:
@@ -135,14 +143,14 @@ class _State:
 
 class LiveEngine:
     def __init__(self, work_dir: str | Path | None = None, rpc_url: str | None = None) -> None:
-        self.dir = Path(work_dir) if work_dir else Path(tempfile.mkdtemp(prefix="tessera_live_"))
+        self.dir = Path(work_dir) if work_dir else Path(tempfile.mkdtemp(prefix="labyrinth_live_"))
         self.dir.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
-        master = hashlib.sha256(b"tessera-demo-master-key").digest()  # demo key file stand-in; KMS in production
+        master = hashlib.sha256(b"labyrinth-demo-master-key").digest()  # demo key file stand-in; KMS in production
         self.store = EncryptedBlobStore(self.dir / "blobs", master_key=master)
         self.chain = EventChain(self.dir / "chain.db")
-        url = rpc_url if rpc_url is not None else os.environ.get("TESSERA_RPC")
-        self.rpc = AnchorRPCClient(rpc_url=url or "mock", private_key=os.environ.get("TESSERA_ANCHOR_KEY"))
+        url = rpc_url if rpc_url is not None else os.environ.get("LABYRINTH_RPC")
+        self.rpc = AnchorRPCClient(rpc_url=url or "mock", private_key=os.environ.get("LABYRINTH_ANCHOR_KEY"))
         self.live_chain = bool(url and url != "mock")
         self.registry = ConsortiumRegistry(self.dir / "registry.db", audit_callback=self._on_registry_event)
         self.states: dict[str, _State] = {}
@@ -150,6 +158,7 @@ class LiveEngine:
         self.lookup: dict[str, str] = {}
         self._originals: dict[str, bytes] = {}
         self._race_n = 0
+        self._sample_n = 0
 
     # ------------------------------------------------------------------ keys, chain, anchoring
     @staticmethod
@@ -314,12 +323,18 @@ class LiveEngine:
             step, label, desc = meta.get(cid, ("", f"Extra · {cid}", json.loads(path.read_text(encoding="utf-8")).get("description", "")))
             self.submit(cid, json.loads(path.read_text(encoding="utf-8")), step=step, label=label, description=desc)
 
-    def submit_upload(self, base_case_id: str, pdf_bytes: bytes) -> dict[str, Any]:
-        """Real extraction of an uploaded PDF, then the full pipeline against the chosen case's parties and evidence."""
+    def submit_upload(self, base_case_id: str, pdf_bytes: bytes, attach: set[str] | None = None) -> dict[str, Any]:
+        """Real extraction of an uploaded PDF, then the full pipeline.
+
+        The chosen scenario supplies the parties and the supporting evidence the seller attaches (`attach` keys:
+        po, grn, cnt, ewb; None means all). A document that is not attached is simply absent, and the checks say so.
+        """
         base = self.states.get(self.lookup.get(base_case_id, base_case_id))
         if base is None:
             raise NotFound(base_case_id)
-        sha = hashlib.sha256(pdf_bytes).hexdigest()
+        keep_types = None if attach is None else {ATTACH_TYPES[k] for k in attach if k in ATTACH_TYPES}
+        sha = hashlib.sha256(pdf_bytes + ",".join(sorted(attach or ())).encode()).hexdigest()
+        file_sha = hashlib.sha256(pdf_bytes).hexdigest()
         parties = base.ctx.parties
         by_gstin = {p.gstin: p.party_id for p in parties.values()}
         res = extract_document(pdf_bytes, version_id=f"V-UP-{sha[:10]}", created_at=base.ctx.version.created_at, parties_by_gstin=by_gstin)
@@ -343,30 +358,80 @@ class LiveEngine:
                 "requested_amount_paise": invoice.grand_total_paise,
             }
         )
+        # The seller attaches evidence to *this* invoice; a different invoice does not inherit the scenario's own record.
+        own = base.ctx.invoice.invoice_id
+        replaced = invoice.invoice_id != own
+
+        def attached(docs: list[EvidenceDoc]) -> list[EvidenceDoc]:
+            out = []
+            for d in docs:
+                if keep_types is not None and d.doc_type.value in ATTACH_TYPES.values() and d.doc_type.value not in keep_types:
+                    continue
+                out.append(d.model_copy(update={"invoice_id": invoice.invoice_id}) if replaced and d.invoice_id == own else d)
+            return out
+
+        history = base.ctx.history
+        hist_docs = [d for d in history.evidence_docs if not (replaced and d.invoice_id == own)]
+        hist_invoices = [i for i in history.invoices if not (replaced and i.invoice_id == own)]
+        evidence = attached(list(base.ctx.evidence))
+        # A document the seller did not attach is *not yet provided*: the checks that need it are `unavailable`
+        # (route to review, request the evidence), not failed as if its absence had been confirmed.
+        meta = {k: v for k, v in history.metadata.items() if k not in ("registry", "pdf_bytes")}
+        pending: list[str] = list(meta.get("unavailable_checks") or [])
+        for key in sorted(set(ATTACH_TYPES) - (set(ATTACH_TYPES) if attach is None else set(attach))):
+            pending += NOT_PROVIDED[key]
+        if pending:
+            meta["unavailable_checks"] = sorted(set(pending))
+        history = history.model_copy(update={
+            "invoices": hist_invoices,
+            "evidence_docs": hist_docs + evidence,
+            "metadata": meta,
+        })
         raw = {
             "parties": {pid: p.model_dump(mode="json") for pid, p in parties.items()},
             "invoice": invoice.model_dump(mode="json"),
             "version": ext_version.model_dump(mode="json"),
             "request": request.model_dump(mode="json"),
-            "evidence": [d.model_dump(mode="json") for d in base.ctx.evidence],
-            "history": base.ctx.history.model_copy(
-                update={"metadata": {k: v for k, v in base.ctx.history.metadata.items() if k not in ("registry", "pdf_bytes")}}
-            ).model_dump(mode="json"),
+            "evidence": [d.model_dump(mode="json") for d in evidence],
+            "history": history.model_dump(mode="json"),
         }
         extraction = {
             "method": res.method,
             "validators": [c.model_dump(mode="json") for c in ext_checks],
             "provenance": {k: v.model_dump(mode="json") for k, v in ext_version.field_provenance.items()},
             "printed": {k: v for k, v in res.extras.items() if v},
+            "attached": sorted(attach) if attach is not None else sorted(ATTACH_TYPES),
+            "file_sha256": file_sha,
         }
-        card = self.submit(
-            f"upload_{sha[:10]}", raw, step="", label=f"Upload · {invoice.invoice_no}",
+        case_id = f"upload_{sha[:10]}"
+        self.submit(
+            case_id, raw, step="", label=f"Upload · {invoice.invoice_no}",
             description="Uploaded PDF: real extraction, then the full pipeline.",
             file_bytes=pdf_bytes, extraction=extraction, source="upload",
         )
-        st = self.states[f"upload_{sha[:10]}"]
+        st = self.states[case_id]
         st.ctx = st.ctx.model_copy(update={"version": st.ctx.version.model_copy(update={"field_provenance": ext_version.field_provenance})})
-        return self.card(st.case_id)
+        return self.card(case_id)
+
+    def sample_pdf(self, layout: str = "tabular_gst", variant: str = "clean") -> bytes:
+        """A fresh invoice PDF (new invoice number each call) for the clean-goods parties, printed in one of the three layouts.
+
+        `variant="bad_arith"` prints a grand total that does not add up, so extraction's own validators catch it.
+        """
+        from data.generator.pdfs import LAYOUTS, render_invoice_pdf_bytes
+
+        if layout not in LAYOUTS:
+            raise Conflict(f"Unknown layout '{layout}'.")
+        base = self.states.get("clean_goods")
+        if base is None:
+            raise NotFound("clean_goods")
+        with self.lock:
+            self._sample_n += 1
+            n = self._sample_n
+        inv = base.ctx.invoice.model_copy(update={"invoice_no": f"SPC/26-27/9{n:03d}"})
+        if variant == "bad_arith":
+            inv = inv.model_copy(update={"grand_total_paise": inv.grand_total_paise + 5_000_000})
+        return render_invoice_pdf_bytes(inv, base.ctx.parties[inv.seller_id], base.ctx.parties[inv.buyer_id], layout=layout)
 
     # ------------------------------------------------------------------ lookup
     def get(self, ident: str) -> _State:
@@ -581,6 +646,9 @@ class LiveEngine:
             failed_file = (failure.doc_id if failure else None) if failure else None
             if failure is not None:
                 detail = f"AES-256-GCM authentication failed for {failure.doc_id}.bin: stored ciphertext no longer matches what was encrypted."
+            elif report.integrity["status"] == "verified":
+                detail = (f"The event chain is intact ({self.chain.head()[0]} events, every hash links to the one before). "
+                          f"{len(doc_ids)} stored file(s) decrypt and authenticate.")
             else:
                 detail = report.integrity["details"]
             anchoring = report.anchoring

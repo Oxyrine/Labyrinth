@@ -491,7 +491,7 @@ class ConsortiumRegistry:
                     holder_state = str(holder["state"]) if holder else "reserved"
                     holder_res_id = str(holder["reservation_id"]) if holder else None
                     held_by_other = holder_lender != lender_id
-                    disclose = os.environ.get("TESSERA_DISCLOSE_LENDER") == "1"
+                    disclose = os.environ.get("LABYRINTH_DISCLOSE_LENDER") == "1"
 
                     if holder_state == ReservationState.SETTLED.value:
                         reason = "already_settled"

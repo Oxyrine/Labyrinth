@@ -65,7 +65,7 @@ def render_invoice_pdf(
     pdf_bytes = render_invoice_pdf_bytes(invoice, seller, buyer, layout=layout, remarks=prompt_injection_text)  # type: ignore[arg-type]
 
     if mod_date_after or producer_mismatch:
-        creator_str = "Tessera ReportLab Invariant v1"
+        creator_str = "Labyrinth ReportLab Invariant v1"
         producer_str = "Adobe Acrobat Pro PostEdit 24.0" if producer_mismatch else creator_str
         try:
             inv_dt = datetime.strptime(invoice.invoice_date, "%Y-%m-%d")

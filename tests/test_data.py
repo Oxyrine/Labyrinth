@@ -1,4 +1,4 @@
-"""Comprehensive tests for Tessera synthetic economy generator (data/) and hand-written fixtures (fixtures/)."""
+"""Comprehensive tests for Labyrinth synthetic economy generator (data/) and hand-written fixtures (fixtures/)."""
 
 from __future__ import annotations
 
@@ -90,7 +90,7 @@ def test_world_gstin_checksums_aliases_and_hkdf_keys() -> None:
     priv1, pub1 = derive_party_keypair(2601, "P-0001")
     priv2, pub2 = derive_party_keypair(2601, "P-0001")
     assert (priv1, pub1) == (priv2, pub2)
-    msg = b"tessera-signature-test"
+    msg = b"labyrinth-signature-test"
     sig_hex = sign_with_party_key(2601, "P-0001", msg)
     pub_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub1))
     pub_key.verify(bytes.fromhex(sig_hex), msg)
@@ -221,7 +221,7 @@ def test_pdf_hashes_fast_and_single_invoice_determinism() -> None:
         assert inv.invoice_no in text and inv.seller_gstin in text and inv.buyer_gstin in text
         assert rs(inv.grand_total_paise) in text
         # Printed invoices carry no internal ids and no machine-readable answer key.
-        assert inv.invoice_id not in text and "TESSERA_INVOICE_JSON" not in text and "LINE_ITEM|" not in text
+        assert inv.invoice_id not in text and "LABYRINTH_INVOICE_JSON" not in text and "LINE_ITEM|" not in text
 
     scan1 = render_noisy_scan_pdf_bytes(inv, seller, buyer, seed=2601)
     scan2 = render_noisy_scan_pdf_bytes(inv, seller, buyer, seed=2601)

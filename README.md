@@ -1,6 +1,6 @@
-# Tessera — Invoice Financing with Hybrid Audit
+# Labyrinth — Invoice Financing with Hybrid Audit
 
-Tessera is an invoice-financing prototype for Synesis 26, Problem 2. One financing request moves through
+Labyrinth is an invoice-financing prototype for Synesis 26, Problem 2. One financing request moves through
 extraction, document matching, duplicate and cross-lender checks, a network screen, buyer/receivables risk and a
 decision, and every state change is written to a hash-chained, Merkle-anchored audit log. Uncertain cases go to a person.
 
@@ -20,7 +20,7 @@ python run.py test                    # contract validation + fast tests (python
 python run.py world --regime A        # deterministic synthetic economy, PDFs, scans
 python run.py pipeline --regime A     # real pipeline over every case -> decisions.jsonl, rings.json, extractions.jsonl
 python run.py report                  # eval/report.md and eval/report.json, computed from those outputs
-TESSERA_DEMO=1 python run.py demo     # UI at http://127.0.0.1:8000 (demo-only tamper / network-off routes need TESSERA_DEMO=1)
+LABYRINTH_DEMO=1 python run.py demo     # UI at http://127.0.0.1:8000 (demo-only tamper / network-off routes need LABYRINTH_DEMO=1)
 python app/build_data.py              # refresh the offline snapshot app/static/data.js from a real engine run
 ```
 
@@ -44,7 +44,7 @@ python app/build_data.py              # refresh the offline snapshot app/static/
 
 ## Demo simplifications (the UI says so where it matters)
 
-- **Anchoring is a local simulated contract** unless `TESSERA_RPC` and `TESSERA_ANCHOR_KEY` point at a funded testnet
+- **Anchoring is a local simulated contract** unless `LABYRINTH_RPC` and `LABYRINTH_ANCHOR_KEY` point at a funded testnet
   account. `chain/Anchor.sol` and the web3 path exist but have not been run against a testnet here.
 - **Keys**: party, buyer and lender signing keys are derived from a public demo seed, and the demo server signs on
   behalf of the selected demo role. Production needs a KMS, separate key roles and real identity. Role headers are not authentication.
@@ -73,3 +73,11 @@ eval/       baseline, report, extraction accuracy, red-team cases, frozen thresh
 
 All money is integer paise and rates are basis points. Missing input is `unavailable`, never `pass`. Contract changes
 after the freeze are additive only. Pricing is labelled illustrative everywhere it appears.
+
+## Interface
+
+A landing screen, then four views in a numbered stepper: Finance (decision and evidence), Submit (upload a PDF and see what was
+read), Review (queue, one-invoice-one-lender race, audited overrides), Verify (integrity and anchoring, break-it sandbox,
+benchmark). The look (warm ink, gold seal, serif display type) takes its direction from the Circe console; the code is new.
+Fonts load from Google Fonts and fall back to system fonts offline; the CSP allows only `fonts.googleapis.com` and
+`fonts.gstatic.com` for that. Without the server, `file://` opens a read-only snapshot.

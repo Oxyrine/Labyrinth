@@ -1,4 +1,4 @@
-"""Tessera workflow state machine, decision engine, overrides, explanation card, and pipeline runner."""
+"""Labyrinth workflow state machine, decision engine, overrides, explanation card, and pipeline runner."""
 
 from workflow.card import THREE_PROPERTY_BANNER, build_explanation_card
 from workflow.decision import evaluate, is_hard_fail, is_required_check

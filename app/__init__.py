@@ -1,4 +1,4 @@
-"""Tessera FastAPI server and offline-capable web interface package."""
+"""Labyrinth FastAPI server and offline-capable web interface package."""
 
 from __future__ import annotations
 

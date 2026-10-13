@@ -1,6 +1,6 @@
-"""Tessera FastAPI server. Thin HTTP layer over `app.live.LiveEngine`; all decisions come from the real modules.
+"""Labyrinth FastAPI server. Thin HTTP layer over `app.live.LiveEngine`; all decisions come from the real modules.
 
-Auth note: the demo identifies callers by a role token header (`X-Tessera-Role: lender:L1`). That is a demo
+Auth note: the demo identifies callers by a role token header (`X-Labyrinth-Role: lender:L1`). That is a demo
 convention, not authentication; production needs real identity, per-party keys and mTLS.
 """
 
@@ -15,7 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,7 +31,7 @@ MAX_PAYLOAD_BYTES = 10 * 1024 * 1024
 ROLES = {"seller", "buyer", "lender", "reviewer", "auditor"}
 
 SECURITY_HEADERS = {
-    "Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'",
+    "Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'none'",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "no-referrer",
@@ -68,8 +69,8 @@ class TokenBucketRateLimiter:
 
 
 def caller(request: Request, default_role: str) -> dict[str, str]:
-    """Role/actor from `X-Tessera-Role` or `Authorization: Bearer role:actor`; unknown roles are rejected."""
-    token = request.headers.get("X-Tessera-Role", "").strip()
+    """Role/actor from `X-Labyrinth-Role` or `Authorization: Bearer role:actor`; unknown roles are rejected."""
+    token = request.headers.get("X-Labyrinth-Role", "").strip()
     if not token:
         auth = request.headers.get("Authorization", "").strip()
         token = auth[7:].strip() if auth.lower().startswith("bearer ") else ""
@@ -103,15 +104,15 @@ def eval_summary() -> dict[str, Any] | None:
 
 
 def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) -> FastAPI:
-    is_demo = demo_mode if demo_mode is not None else (os.environ.get("TESSERA_DEMO", "0") == "1")
-    app = FastAPI(title="Tessera", version="1.0.0", docs_url="/api/docs" if is_demo else None, redoc_url=None)
+    is_demo = demo_mode if demo_mode is not None else (os.environ.get("LABYRINTH_DEMO", "0") == "1")
+    app = FastAPI(title="Labyrinth", version="1.0.0", docs_url="/api/docs" if is_demo else None, redoc_url=None)
 
     if engine is None:
         engine = LiveEngine()
         engine.load_fixtures()
     app.state.engine = engine
     app.state.is_demo = is_demo
-    app.state.limiter = TokenBucketRateLimiter(capacity=int(os.environ.get("TESSERA_RATE_LIMIT_CAPACITY", "40")))
+    app.state.limiter = TokenBucketRateLimiter(capacity=int(os.environ.get("LABYRINTH_RATE_LIMIT_CAPACITY", "40")))
 
     @app.middleware("http")
     async def guards(request: Request, call_next: Any) -> Any:
@@ -134,6 +135,13 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
     @app.exception_handler(Conflict)
     async def _conflict(_: Request, exc: Conflict) -> JSONResponse:
         return JSONResponse({"detail": str(exc)}, status_code=409)
+
+    @app.exception_handler(StarletteHTTPException)
+    async def _http(request: Request, exc: StarletteHTTPException) -> Response:
+        api = request.url.path.startswith(("/requests", "/audit", "/cases", "/queue", "/overrides", "/reservations", "/breakit", "/demo", "/health"))
+        if exc.status_code == 404 and not api and "text/html" in request.headers.get("accept", ""):
+            return HTMLResponse((STATIC_DIR / "404.html").read_text(encoding="utf-8"), status_code=404)
+        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=getattr(exc, "headers", None))
 
     @app.exception_handler(ExtractionError)
     async def _unreadable(_: Request, exc: ExtractionError) -> JSONResponse:
@@ -165,6 +173,8 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
             form = await request.form()
             upload = form.get("file")
             case_id = str(form.get("case_id") or "clean_goods")
+            raw_attach = form.get("attach")
+            attach = None if raw_attach is None else {x for x in str(raw_attach).split(",") if x}
             if upload is None or not hasattr(upload, "read"):
                 raise HTTPException(status_code=400, detail="Multipart upload needs a 'file' part.")
             data = await upload.read()
@@ -172,7 +182,7 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
                 raise HTTPException(status_code=413, detail="Uploaded file exceeds the 10 MB limit.")
             if not data.startswith(b"%PDF-"):
                 raise HTTPException(status_code=400, detail="Invalid upload: file must begin with %PDF- magic bytes.")
-            return engine.submit_upload(case_id, data)
+            return engine.submit_upload(case_id, data, attach)
         body = await json_body(request)
         for key in ("file_magic", "file_content"):
             if key in body and not str(body[key]).startswith("%PDF-"):
@@ -243,11 +253,18 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
         return engine.breakit(await json_body(request))
 
     if is_demo:
-        # Demo-only: these routes do not exist unless TESSERA_DEMO=1.
+        # Demo-only: these routes do not exist unless LABYRINTH_DEMO=1.
         @app.post("/demo/tamper")
         async def tamper(request: Request) -> dict[str, Any]:
             body = await json_body(request)
             return engine.tamper(str(body.get("target") or "D-PO-0001"), bool(body.get("reset", False)))
+
+        @app.get("/demo/sample-invoice")
+        async def sample_invoice(layout: str = "tabular_gst", variant: str = "clean") -> Response:
+            if variant not in {"clean", "bad_arith"}:
+                raise HTTPException(status_code=400, detail="variant must be 'clean' or 'bad_arith'.")
+            pdf = engine.sample_pdf(layout, variant)
+            return Response(pdf, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="sample-{layout}-{variant}.pdf"'})
 
         @app.post("/demo/network-off")
         async def network_off(request: Request) -> dict[str, Any]:
@@ -262,7 +279,7 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
 
     @app.get("/{asset_name}")
     async def root_asset(asset_name: str) -> FileResponse:
-        if asset_name in {"app.css", "data.js", "seller.js", "lender.js", "queue.js", "verifier.js", "ring.js", "tour.js"}:
+        if asset_name in {"app.css", "data.js", "seller.js", "lender.js", "queue.js", "verifier.js", "ring.js", "tour.js", "workspace.js", "landing.js"}:
             path = STATIC_DIR / asset_name
             if path.exists():
                 return FileResponse(str(path), media_type="text/css" if asset_name.endswith(".css") else "application/javascript")

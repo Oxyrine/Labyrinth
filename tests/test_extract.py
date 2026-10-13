@@ -146,7 +146,7 @@ def test_30_generated_pdfs_across_3_layouts_extract_from_visible_text() -> None:
             assert pdf_bytes == render_invoice_pdf(base_inv, layout=layout)  # deterministic
 
             text = PdfReader(io.BytesIO(pdf_bytes)).pages[0].extract_text()
-            assert "TESSERA_INVOICE_JSON" not in text and "LINE_ITEM|" not in text
+            assert "LABYRINTH_INVOICE_JSON" not in text and "LINE_ITEM|" not in text
             assert base_inv.invoice_id not in text and base_inv.seller_id not in text
 
             ext_inv, ext_ver, checks = extract(pdf_bytes)
@@ -450,12 +450,12 @@ def test_layout_fingerprinting() -> None:
 
 
 def test_check_source_toggle(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Verify `TESSERA_EXTRACT_LIVE=0` switches `CheckResult.source` to `CheckSource.FIXTURE`."""
+    """Verify `LABYRINTH_EXTRACT_LIVE=0` switches `CheckResult.source` to `CheckSource.FIXTURE`."""
     ctx = _load_fixture_context("clean_goods")
-    monkeypatch.setenv("TESSERA_EXTRACT_LIVE", "0")
+    monkeypatch.setenv("LABYRINTH_EXTRACT_LIVE", "0")
     checks_fixture = run(ctx)
     assert all(c.source == CheckSource.FIXTURE for c in checks_fixture)
 
-    monkeypatch.setenv("TESSERA_EXTRACT_LIVE", "1")
+    monkeypatch.setenv("LABYRINTH_EXTRACT_LIVE", "1")
     checks_live = run(ctx)
     assert all(c.source == CheckSource.LIVE for c in checks_live)

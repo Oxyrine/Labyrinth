@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var UI = window.TesseraUI;
+  var UI = window.LabyrinthUI;
 
   function renderQueueTable(items) {
     var wrap = document.getElementById("queue-table-wrap");
@@ -26,8 +26,8 @@
         onClick: function () {
           var ovrSel = document.getElementById("override-case-select");
           if (ovrSel) ovrSel.value = item.case_id;
-          if (window.TesseraLender && window.TesseraLender.loadCase) {
-            window.TesseraLender.loadCase(item.case_id);
+          if (window.LabyrinthLender && window.LabyrinthLender.loadCase) {
+            window.LabyrinthLender.loadCase(item.case_id);
           }
           UI.switchTab("lender");
         },
@@ -36,11 +36,11 @@
       tbody.appendChild(
         UI.el("tr", {}, [
           UI.el("td", { text: "#" + (idx + 1) }),
-          UI.el("td", { text: item.request_id + " (" + item.case_id + ")" }),
+          UI.el("td", { text: item.request_id + " · " + item.case_id.replace(/_/g, " ") }),
           UI.el("td", {}, [UI.el("span", { className: "badge " + tierBadgeClass, text: tier })]),
-          UI.el("td", { text: item.formatted_exposure + " (" + item.exposure_paise + "p)" }),
-          UI.el("td", {}, [UI.el("span", { className: "badge " + outBadgeClass, text: item.outcome })]),
-          UI.el("td", { text: item.requires_dual_reviewer ? "Dual Reviewer Required" : "Single Reviewer" }),
+          UI.el("td", { text: item.formatted_exposure }),
+          UI.el("td", {}, [UI.el("span", { className: "badge " + outBadgeClass, text: UI.outcomeLabel(item.outcome) })]),
+          UI.el("td", { text: item.requires_dual_reviewer ? "Two reviewers needed" : "One reviewer" }),
           UI.el("td", {}, [inspectBtn]),
         ])
       );
@@ -50,13 +50,13 @@
       UI.el("table", { className: "data-table" }, [
         UI.el("thead", {}, [
           UI.el("tr", {}, [
-            UI.el("th", { text: "Rank" }),
-            UI.el("th", { text: "Request / Case" }),
-            UI.el("th", { text: "Network Tier" }),
-            UI.el("th", { text: "Exposure (Paise)" }),
+            UI.el("th", { text: "#" }),
+            UI.el("th", { text: "Request" }),
+            UI.el("th", { text: "Network tier" }),
+            UI.el("th", { text: "Exposure" }),
             UI.el("th", { text: "Outcome" }),
-            UI.el("th", { text: "Override Policy" }),
-            UI.el("th", { text: "Action" }),
+            UI.el("th", { text: "Sign-off" }),
+            UI.el("th", { text: "" }),
           ]),
         ]),
         tbody,
@@ -66,7 +66,7 @@
 
   function refreshQueue() {
     return UI.apiFetch("/queue?all_cases=true").then(function (data) {
-      renderQueueTable(data.all_prioritized || data.queue || []);
+      renderQueueTable((data.all_prioritized || data.queue || []).filter(function(item) { return item.outcome === "review" || item.outcome === "reject"; }));
       return data;
     });
   }
@@ -134,8 +134,8 @@
     var settledBtn = document.getElementById("inspect-settled-btn");
     if (settledBtn) {
       settledBtn.addEventListener("click", function () {
-        if (window.TesseraLender && window.TesseraLender.loadCase) {
-          window.TesseraLender.loadCase("refinance_settled");
+        if (window.LabyrinthLender && window.LabyrinthLender.loadCase) {
+          window.LabyrinthLender.loadCase("refinance_settled");
         }
         UI.switchTab("lender");
       });
@@ -149,6 +149,11 @@
         var rev1 = document.getElementById("override-reviewer1").value.trim();
         var rev2 = document.getElementById("override-reviewer2").value.trim();
         var reason = document.getElementById("override-reason").value.trim();
+        if (reason.length < 5) {
+          setOverrideBanner("Write a reason of at least a few words. It is stored with the decision.", true);
+          document.getElementById("override-reason").focus();
+          return;
+        }
 
         UI.apiFetch("/overrides", {
           method: "POST",
@@ -172,8 +177,8 @@
               false
             );
             refreshQueue();
-            if (window.TesseraLender && window.TesseraLender.loadCase) {
-              window.TesseraLender.loadCase(cid);
+            if (window.LabyrinthLender && window.LabyrinthLender.loadCase) {
+              window.LabyrinthLender.loadCase(cid);
             }
           })
           .catch(function (err) {
@@ -183,7 +188,7 @@
     }
   }
 
-  window.TesseraQueue = {
+  window.LabyrinthQueue = {
     init: initQueueTab,
     refreshQueue: refreshQueue,
     triggerRace: function () {

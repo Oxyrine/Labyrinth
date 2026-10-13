@@ -1,4 +1,4 @@
-"""Tessera Stage 2c: Network Authenticity & Ring Analysis (`network`)."""
+"""Labyrinth Stage 2c: Network Authenticity & Ring Analysis (`network`)."""
 
 from __future__ import annotations
 

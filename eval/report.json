@@ -1166,7 +1166,7 @@
     },
     "dedup": {
       "count": 404,
-      "max_ms": 118,
+      "max_ms": 120,
       "p50_ms": 4,
       "p95_ms": 6
     },
@@ -1178,14 +1178,14 @@
     },
     "match": {
       "count": 404,
-      "max_ms": 123,
-      "p50_ms": 8,
-      "p95_ms": 10
+      "max_ms": 125,
+      "p50_ms": 9,
+      "p95_ms": 11
     },
     "network": {
       "count": 404,
-      "max_ms": 230,
-      "p50_ms": 17,
+      "max_ms": 222,
+      "p50_ms": 16,
       "p95_ms": 22
     },
     "risk": {
@@ -1196,9 +1196,9 @@
     },
     "total": {
       "count": 404,
-      "max_ms": 236,
+      "max_ms": 227,
       "p50_ms": 38,
-      "p95_ms": 46
+      "p95_ms": 45
     }
   },
   "thresholds_lock": {

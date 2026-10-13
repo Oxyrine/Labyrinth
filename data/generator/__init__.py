@@ -1,4 +1,4 @@
-"""Deterministic synthetic economy generator modules for Tessera."""
+"""Deterministic synthetic economy generator modules for Labyrinth."""
 
 from data.generator.cities import CITIES, CITY_BY_PINCODE, haversine_km, road_distance_km
 from data.generator.docs import EconomyDataset, build_invoice_and_docs, generate_legitimate_economy

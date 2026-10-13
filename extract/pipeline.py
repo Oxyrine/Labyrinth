@@ -1,7 +1,7 @@
 """End-to-end PDF invoice extraction (`extract/pipeline.py`).
 
 Order: pypdf text layer -> OCR (image-only scans, needs Tesseract) -> layout fingerprint -> visible-text parser
--> optional schema-bound Claude fallback (off unless `TESSERA_ALLOW_EXTERNAL_LLM=1`) -> deterministic validators.
+-> optional schema-bound Claude fallback (off unless `LABYRINTH_ALLOW_EXTERNAL_LLM=1`) -> deterministic validators.
 Nothing is invented: an unreadable document raises `ExtractionError` and goes to a human.
 """
 

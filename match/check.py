@@ -22,7 +22,7 @@ from match.three_way import (
 
 
 def run(ctx: CaseContext) -> list[CheckResult]:
-    """Run all `match.*` checks for the given CaseContext, respecting `TESSERA_MATCH_LIVE`."""
+    """Run all `match.*` checks for the given CaseContext, respecting `LABYRINTH_MATCH_LIVE`."""
     source = get_check_source()
     meta = get_case_metadata(ctx)
     if source.value == "fixture" and "fixture_match_results" in meta:

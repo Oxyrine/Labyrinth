@@ -2,13 +2,15 @@
 (function () {
   "use strict";
 
-  var UI = window.TesseraUI;
+  var UI = window.LabyrinthUI;
   var currentCaseId = "ring_real_firms";
   var currentCard = null;
+  var loadSequence = 0;
 
   function renderExplanationCard(card) {
     if (!card || !card.decision) return;
     currentCard = card;
+    if (window.LabyrinthWorkspace) window.LabyrinthWorkspace.updateCard(card);
     currentCaseId = card.case_id || currentCaseId;
 
     var dec = card.decision;
@@ -16,7 +18,7 @@
     var req = card.request || {};
     var ver = card.version || {};
 
-    UI.updateGlobalPropertyBanner(card.three_properties);
+    UI.updateGlobalPropertyBanner(card.three_properties, card.audit_proof);
 
     var reqPill = document.getElementById("lender-req-id-pill");
     if (reqPill) reqPill.textContent = req.request_id + " · " + inv.invoice_no;
@@ -24,7 +26,7 @@
     // Outcome badge
     var outBadge = document.getElementById("lender-outcome-badge");
     if (outBadge) {
-      outBadge.textContent = String(dec.outcome || "").replace(/_/g, " ").toUpperCase();
+      outBadge.textContent = UI.outcomeLabel(dec.outcome);
       outBadge.className = "outcome-badge";
       if (dec.outcome === "conditionally_approved") {
         outBadge.classList.add("outcome-approved");
@@ -37,12 +39,12 @@
 
     var stateBadge = document.getElementById("lender-state-badge");
     if (stateBadge) {
-      stateBadge.textContent = "STATE: " + String(dec.state || req.state || "submitted").toUpperCase();
+      stateBadge.textContent = String(dec.state || req.state || "submitted").replace(/_/g, " ");
     }
 
     var gradeLetter = document.getElementById("lender-grade-letter");
     var gradePoints = document.getElementById("lender-grade-points");
-    if (gradeLetter) gradeLetter.textContent = dec.grade || "B";
+    if (gradeLetter) gradeLetter.textContent = dec.grade || "—";
     if (gradePoints) gradePoints.textContent = (dec.score_points || 0) + " / 100 pts";
 
     var tierBadge = document.getElementById("lender-tier-badge");
@@ -58,10 +60,10 @@
     var sellerParty = (card.parties && card.parties[req.seller_id]) || {};
     var buyerParty = (card.parties && card.parties[req.buyer_id]) || {};
     var metaItems = [
-      { label: "Seller", val: (sellerParty.name || req.seller_id) + " (" + inv.seller_gstin + ")" },
-      { label: "Buyer", val: (buyerParty.name || req.buyer_id) + " (" + inv.buyer_gstin + ")" },
-      { label: "Invoice Grand Total", val: UI.formatInr(inv.grand_total_paise) },
-      { label: "Tenor & Dates", val: (req.tenor_days || 60) + "d · " + inv.invoice_date + " -> " + inv.due_date },
+      { label: "Seller", val: sellerParty.name || req.seller_id || "Unavailable" },
+      { label: "Buyer", val: buyerParty.name || req.buyer_id || "Unavailable" },
+      { label: "Invoice value", val: UI.formatInr(inv.grand_total_paise) },
+      { label: "Payment terms", val: (req.tenor_days || "—") + " days · Due " + (inv.due_date || "unavailable") },
     ];
     metaItems.forEach(function (m) {
       metaStrip.appendChild(
@@ -106,29 +108,24 @@
     if (quote) {
       var statsGrid = UI.el("div", { className: "pricing-metrics-grid" }, [
         UI.el("div", { className: "pricing-stat" }, [
-          UI.el("div", { className: "pricing-stat-label", text: "Advance Rate (" + quote.advance_rate_bps + " bps)" }),
-          UI.el("div", { className: "pricing-stat-val", text: (quote.advance_rate_bps / 100) + "% (" + UI.formatInr(quote.advance_amount_paise) + ")" }),
+          UI.el("div", { className: "pricing-stat-label", text: "Advance amount · " + (quote.advance_rate_bps / 100) + "%" }),
+          UI.el("div", { className: "pricing-stat-val", text: UI.formatInr(quote.advance_amount_paise) }),
         ]),
         UI.el("div", { className: "pricing-stat" }, [
-          UI.el("div", { className: "pricing-stat-label", text: "Annual Discount Rate (" + quote.annual_rate_bps + " bps)" }),
+          UI.el("div", { className: "pricing-stat-label", text: "Annual discount rate" }),
           UI.el("div", { className: "pricing-stat-val", text: (quote.annual_rate_bps / 100) + "% p.a. for " + quote.tenor_days + "d" }),
         ]),
         UI.el("div", { className: "pricing-stat" }, [
-          UI.el("div", { className: "pricing-stat-label", text: "Discount Fee (paise: " + quote.discount_paise + ")" }),
+          UI.el("div", { className: "pricing-stat-label", text: "Discount fee" }),
           UI.el("div", { className: "pricing-stat-val", text: UI.formatInr(quote.discount_paise) }),
         ]),
         UI.el("div", { className: "pricing-stat" }, [
-          UI.el("div", { className: "pricing-stat-label", text: "Net Disbursement to Seller" }),
+          UI.el("div", { className: "pricing-stat-label", text: "Net proceeds to seller" }),
           UI.el("div", { className: "pricing-stat-val", text: UI.formatInr(quote.net_disbursement_paise) }),
         ]),
       ]);
       pricingBody.appendChild(statsGrid);
-      pricingBody.appendChild(
-        UI.el("div", {
-          className: "arithmetic-trace-box",
-          text: quote.arithmetic_trace,
-        })
-      );
+      pricingBody.appendChild(UI.el("details", {className: "calculation-details"}, [UI.el("summary", {text: "View calculation"}), UI.el("div", {className: "arithmetic-trace-box", text: quote.arithmetic_trace})]));
       if (policyNotice) {
         policyNotice.textContent = quote.policy_notice || "Illustrative prototype policy, not validated lending prices.";
       }
@@ -136,7 +133,7 @@
       pricingBody.appendChild(
         UI.el("div", {
           className: "status-banner error",
-          text: "Grade E Decline — No financing quote issued for rejected request.",
+          text: "No financing quote is available for this request.",
         })
       );
     }
@@ -149,7 +146,7 @@
         ringBadge.textContent = rg.ring_id + " · SCORE " + Number(rg.score || 0).toFixed(2) + " (" + String(rg.tier || "low").toUpperCase() + ")";
         ringBadge.className = "badge " + (rg.tier === "high" ? "badge-fail" : "badge-warn");
       } else {
-        ringBadge.textContent = "ACYCLIC · SCORE " + Number(rg.score || 0.02).toFixed(2);
+        ringBadge.textContent = "ACYCLIC · SCORE " + Number(rg.score || 0).toFixed(2);
         ringBadge.className = "badge badge-pass";
       }
     }
@@ -209,12 +206,12 @@
     (card.evidence || []).forEach(function (ev) {
       evTbody.appendChild(
         UI.el("tr", {}, [
-          UI.el("td", { text: ev.doc_id }),
-          UI.el("td", { text: ev.doc_type }),
+          UI.el("td", { className: "mono-id", text: ev.doc_id }),
+          UI.el("td", { text: String(ev.doc_type).replace(/_/g, " ") }),
           UI.el("td", { text: ev.doc_no }),
-          UI.el("td", { text: ev.source }),
-          UI.el("td", { text: ev.verification_status }),
-          UI.el("td", { text: Number(ev.evidence_weight || 1.0).toFixed(1) }),
+          UI.el("td", { text: String(ev.source).replace(/_/g, " ") }),
+          UI.el("td", { text: String(ev.verification_status).replace(/_/g, " ") }),
+          UI.el("td", { text: Number(ev.evidence_weight == null ? 0 : ev.evidence_weight).toFixed(1) }),
         ])
       );
     });
@@ -238,11 +235,11 @@
     var checksContainer = document.getElementById("lender-checks-container");
     UI.clear(checksContainer);
     var stageMeta = [
-      { key: "extract", title: "Stage 1 · Document Extraction & Arithmetic (extract.*)" },
-      { key: "match", title: "Stage 2a · Three-Way Cross-Document Matching & E-Way Bill (match.*)" },
-      { key: "dedup", title: "Stage 2b · Identity Versioning, Near-Duplicate & Consortium Registry (dedup.*)" },
-      { key: "network", title: "Stage 2c · Supply-Chain Network & Ring Topology (network.*)" },
-      { key: "risk", title: "Stage 3 · Buyer Payment History & Risk Scorecard (risk.*)" },
+      { key: "extract", title: "Invoice extraction" },
+      { key: "match", title: "Document matching" },
+      { key: "dedup", title: "Duplicates & registry" },
+      { key: "network", title: "Network screening" },
+      { key: "risk", title: "Buyer risk" },
     ];
 
     var grouped = card.checks_by_stage || {};
@@ -251,10 +248,11 @@
       if (list.length === 0) return;
 
       var latencyMs = (dec.stage_latencies_ms && dec.stage_latencies_ms[stg.key]) || 8;
-      var groupDiv = UI.el("div", { className: "stage-group" }, [
-        UI.el("div", { className: "stage-group-header" }, [
+      var flagged = list.filter(function (c) { return c.status === "warn" || c.status === "fail" || c.status === "unavailable"; }).length;
+      var groupDiv = UI.el("details", { className: "stage-group" }, [
+        UI.el("summary", { className: "stage-group-header" }, [
           UI.el("span", { text: stg.title }),
-          UI.el("span", { className: "mono-id", text: list.length + " checks · " + latencyMs + " ms" }),
+          UI.el("span", { className: "mono-id", text: list.length + " checks" + (flagged ? " · " + flagged + " need attention" : " · Complete") }),
         ]),
       ]);
 
@@ -268,7 +266,7 @@
           UI.el("div", {}, [
             UI.el("span", {
               className: "source-chip" + (src === "fixture" ? " fixture" : ""),
-              text: "source: " + src + " · w=" + Number(chk.evidence_weight || 1.0).toFixed(1),
+              text: "source: " + src + " · w=" + Number(chk.evidence_weight == null ? 0 : chk.evidence_weight).toFixed(1),
             }),
           ]),
           UI.el("div", {
@@ -279,6 +277,7 @@
         groupDiv.appendChild(row);
       });
 
+      if (flagged) groupDiv.open = true;
       checksContainer.appendChild(groupDiv);
     });
   }
@@ -293,25 +292,34 @@
 
   function loadCase(caseId) {
     currentCaseId = caseId;
+    var sequence = ++loadSequence;
+    if (window.LabyrinthWorkspace) window.LabyrinthWorkspace.setLoading(true);
     var selects = [
       document.getElementById("lender-case-select"),
       document.getElementById("seller-fixture-select"),
       document.getElementById("override-case-select"),
     ];
     selects.forEach(function (s) {
+      if (s && s.id === "seller-fixture-select" && String(caseId).indexOf("upload_") === 0) return;
       if (s && s.value !== caseId) s.value = caseId;
     });
 
     return UI.apiFetch("/requests/" + encodeURIComponent(caseId)).then(function (card) {
+      if (sequence !== loadSequence) return card;
       renderExplanationCard(card);
-      if (window.TesseraSeller && window.TesseraSeller.renderPreview) {
-        window.TesseraSeller.renderPreview(card);
+      if (window.LabyrinthWorkspace) window.LabyrinthWorkspace.setLoading(false);
+      if (window.LabyrinthSeller && window.LabyrinthSeller.renderPreview) {
+        window.LabyrinthSeller.renderPreview(card);
       }
       return card;
+    }).catch(function (err) {
+      if (sequence === loadSequence && window.LabyrinthWorkspace) { window.LabyrinthWorkspace.setLoading(false); window.LabyrinthWorkspace.showError(err.message); }
+      return null;
     });
   }
 
   function populateCaseSelectors(casesList) {
+    if (window.LabyrinthWorkspace) window.LabyrinthWorkspace.updateCases(casesList);
     var selects = [
       document.getElementById("lender-case-select"),
       document.getElementById("seller-fixture-select"),
@@ -319,16 +327,20 @@
     ];
     selects.forEach(function (sel) {
       if (!sel) return;
+      var keep = sel.value;
+      var scenariosOnly = sel.id === "seller-fixture-select";
       UI.clear(sel);
       casesList.forEach(function (c) {
+        if (scenariosOnly && String(c.case_id).indexOf("upload_") === 0) return;
         sel.appendChild(
           UI.el("option", {
             value: c.case_id,
-            text: (c.step_label || c.case_id) + " — [" + String(c.outcome).toUpperCase() + "]",
+            text: (c.step_label || c.case_id) + " — " + UI.outcomeLabel(c.outcome),
           })
         );
       });
-      sel.value = currentCaseId;
+      if (scenariosOnly) sel.value = keep && Array.prototype.some.call(sel.options, function (o) { return o.value === keep; }) ? keep : "clean_goods";
+      else sel.value = currentCaseId;
     });
   }
 
@@ -397,14 +409,20 @@
     UI.apiFetch("/cases").then(function (data) {
       populateCaseSelectors(data.cases || []);
       loadCase(currentCaseId);
-      if (window.TesseraVerifier && window.TesseraVerifier.renderEvalSummary && data.eval_summary) {
-        window.TesseraVerifier.renderEvalSummary(data.eval_summary);
+      if (window.LabyrinthVerifier && window.LabyrinthVerifier.renderEvalSummary && data.eval_summary) {
+        window.LabyrinthVerifier.renderEvalSummary(data.eval_summary);
       }
-    });
+    }).catch(function (err) { if (window.LabyrinthWorkspace) window.LabyrinthWorkspace.showError(err.message); });
   }
 
-  window.TesseraLender = {
+  function refreshCases(selectId) {
+    if (selectId) currentCaseId = selectId;
+    return UI.apiFetch("/cases").then(function (data) { populateCaseSelectors(data.cases || []); return data; });
+  }
+
+  window.LabyrinthLender = {
     init: initLenderTab,
+    refreshCases: refreshCases,
     loadCase: loadCase,
     renderExplanationCard: renderExplanationCard,
   };

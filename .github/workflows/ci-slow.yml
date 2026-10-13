@@ -1,4 +1,4 @@
-name: Tessera Slow CI (PDFs, Scans, Anchoring)
+name: Labyrinth Slow CI (PDFs, Scans, Anchoring)
 
 on:
   workflow_dispatch:

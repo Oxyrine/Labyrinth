@@ -1,4 +1,4 @@
-name: Tessera Fast CI
+name: Labyrinth Fast CI
 
 on:
   push:

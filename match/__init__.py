@@ -1,4 +1,4 @@
-"""Tessera Stage 2a cross-document matching package (`match`)."""
+"""Labyrinth Stage 2a cross-document matching package (`match`)."""
 
 from match.check import run
 from match.contract_terms import check_contract_terms

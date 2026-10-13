@@ -4,7 +4,7 @@
 - **Owned folders**: `fixtures/`, `data/`
 - **Forbidden folders**: `extract/`, `match/`, `dedup/`, `network/`, `risk/`, `workflow/`, `audit/`, `chain/`, `app/`, `eval/`
 - **Shared contract**: `contract/models.py`, `contract/context.py`, `contract/WIRE_PROTOCOL.md`
-- **Clean-room rule**: Never read or reference any prior repo outside `tessera`.
+- **Clean-room rule**: Never read or reference any prior repo outside `labyrinth`.
 
 ## Deliverables
 1. **23 Hand-Written Fixtures (`fixtures/<case_name>/`)**:

@@ -11,7 +11,7 @@ from typing import Any
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-DEFAULT_DEMO_MASTER_SEED = b"tessera-clean-room-demo-master-key-256bit-v1"
+DEFAULT_DEMO_MASTER_SEED = b"labyrinth-clean-room-demo-master-key-256bit-v1"
 NONCE_BYTES = 12  # 96-bit nonce for AES-GCM
 KEY_BYTES = 32  # 256-bit key for AES-256-GCM
 

@@ -86,7 +86,7 @@ def test_encrypted_blob_store_roundtrip_and_1byte_tamper_detection(tmp_path: Pat
 
     doc_id = "D-INV-2026-001"
     seller_id = "P-SELL-01"
-    pdf_bytes = "%PDF-1.7\nTessera Clean-Room Invoice Payload ₹11,800.00\n%%EOF".encode("utf-8")
+    pdf_bytes = "%PDF-1.7\nLabyrinth Clean-Room Invoice Payload ₹11,800.00\n%%EOF".encode("utf-8")
 
     file_sha256 = store.put_blob(doc_id, seller_id, pdf_bytes)
     assert file_sha256 == hashlib.sha256(pdf_bytes).hexdigest()
@@ -248,7 +248,7 @@ def test_rpc_down_reports_anchoring_unavailable_while_integrity_verified(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Requirement 5: When RPC is down (TESSERA_RPC=http://127.0.0.1:9), verify returns anchoring: 'unavailable' while integrity is 'verified'."""
+    """Requirement 5: When RPC is down (LABYRINTH_RPC=http://127.0.0.1:9), verify returns anchoring: 'unavailable' while integrity is 'verified'."""
     chain = EventChain(tmp_path / "rpc_down.db")
     store = EncryptedBlobStore(tmp_path / "blobs")
     rpc = AnchorRPCClient()
@@ -257,8 +257,8 @@ def test_rpc_down_reports_anchoring_unavailable_while_integrity_verified(
     chain.append("invoice.uploaded", "INV-009", "P-SELL-01", {"doc_id": "D-INV-009", "file_sha256": sha})
     anchor_pending_batch(chain, rpc)
 
-    # Point TESSERA_RPC to dead port 127.0.0.1:9
-    monkeypatch.setenv("TESSERA_RPC", "http://127.0.0.1:9")
+    # Point LABYRINTH_RPC to dead port 127.0.0.1:9
+    monkeypatch.setenv("LABYRINTH_RPC", "http://127.0.0.1:9")
 
     with pytest.raises(RPCDownError):
         rpc.health_check()

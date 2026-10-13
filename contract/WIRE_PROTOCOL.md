@@ -1,4 +1,4 @@
-# Tessera Wire Protocol (`schema_version: 1`)
+# Labyrinth Wire Protocol (`schema_version: 1`)
 
 ## 1. Core Invariants
 

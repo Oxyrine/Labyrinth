@@ -1,4 +1,4 @@
-"""Tessera contract package."""
+"""Labyrinth contract package."""
 
 from contract.context import CaseContext, HistoryView, InMemoryHistoryView
 from contract.models import (

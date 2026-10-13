@@ -1,4 +1,4 @@
-"""Tessera Stage 2b deduplication and consortium registry package (`dedup`)."""
+"""Labyrinth Stage 2b deduplication and consortium registry package (`dedup`)."""
 
 from dedup.check import check_registry, compute_outstanding_paise, run
 from dedup.identity import classify_version, compute_invoice_identity, diff_invoices, normalize_identity_token

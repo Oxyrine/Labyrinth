@@ -612,7 +612,7 @@
     "field_provenance": {},
     "field_root": "ac517cbb52f053e0486cbf66ddafe257766a4dc9782c601be647450b3e6dd586",
     "field_salts": {},
-    "file_sha256": "60bebeabf95dd5c6780303e55e123e85b3b1c0cdb6b9715f805829687d23ee33",
+    "file_sha256": "540f51586f39b25126cead5ebc1a6cefb9da8d0c21108d0b196492a10e48fd9c",
     "invoice_id": "INV-FX-0017",
     "invoice_identity": "9a0195834a24a67ebfd240b4aba3679cd1a10f2ce988038f3909701e458d5327",
     "kind": "initial",

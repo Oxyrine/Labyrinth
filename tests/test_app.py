@@ -12,9 +12,9 @@ from app.live import FIXTURES_DIR, LiveEngine
 from app.server import create_app
 
 ROOT = Path(__file__).resolve().parent.parent
-BUYER = {"X-Tessera-Role": "buyer:P-0002"}
-LENDER = {"X-Tessera-Role": "lender:L1"}
-REVIEWER = {"X-Tessera-Role": "reviewer:REV-1"}
+BUYER = {"X-Labyrinth-Role": "buyer:P-0002"}
+LENDER = {"X-Labyrinth-Role": "lender:L1"}
+REVIEWER = {"X-Labyrinth-Role": "reviewer:REV-1"}
 
 
 @pytest.fixture(scope="module")
@@ -46,7 +46,7 @@ def test_clean_trade_finances_only_after_signed_acceptance_and_confirm(client: T
     assert early.status_code == 409  # no acceptance yet
     ok = client.post("/requests/clean_goods/accept", headers=BUYER, json={"decision": "accept"})
     assert ok.status_code == 200 and ok.json()["state"] == "buyer_accepted"
-    wrong = client.post("/reservations/confirm", headers={"X-Tessera-Role": "lender:L2"}, json={"request_id": "clean_goods", "lender_id": "L2"})
+    wrong = client.post("/reservations/confirm", headers={"X-Labyrinth-Role": "lender:L2"}, json={"request_id": "clean_goods", "lender_id": "L2"})
     assert wrong.status_code == 409 and "owned by lender" in wrong.json()["detail"]
     done = client.post("/reservations/confirm", headers=LENDER, json={"request_id": "clean_goods", "lender_id": "L1"})
     assert done.status_code == 200
@@ -123,15 +123,15 @@ def test_demo_routes_do_not_exist_without_the_flag(engine: LiveEngine) -> None:
 
 
 def test_upload_runs_real_extraction_and_rejects_non_pdf(client: TestClient) -> None:
-    bad = client.post("/requests", headers={"X-Tessera-Role": "seller:P-0001"}, json={"case_id": "clean_goods", "file_magic": "NOPE"})
+    bad = client.post("/requests", headers={"X-Labyrinth-Role": "seller:P-0001"}, json={"case_id": "clean_goods", "file_magic": "NOPE"})
     assert bad.status_code == 400
     pdf = (ROOT / "fixtures" / "clean_goods" / "invoice.pdf").read_bytes()
-    r = client.post("/requests", headers={"X-Tessera-Role": "seller:P-0001"}, data={"case_id": "clean_goods"}, files={"file": ("inv.pdf", pdf, "application/pdf")})
+    r = client.post("/requests", headers={"X-Labyrinth-Role": "seller:P-0001"}, data={"case_id": "clean_goods"}, files={"file": ("inv.pdf", pdf, "application/pdf")})
     assert r.status_code == 200
     card = r.json()
     assert card["source"] == "upload" and card["extraction"]["provenance"]
     assert any(c["check"].startswith("extract.") for c in card["decision"]["checks"])
-    fake = client.post("/requests", headers={"X-Tessera-Role": "seller:P-0001"}, files={"file": ("x.pdf", b"not a pdf", "application/pdf")})
+    fake = client.post("/requests", headers={"X-Labyrinth-Role": "seller:P-0001"}, files={"file": ("x.pdf", b"not a pdf", "application/pdf")})
     assert fake.status_code == 400
 
 
@@ -155,3 +155,26 @@ def test_queue_sorts_by_tier_then_exposure(client: TestClient) -> None:
     items = client.get("/queue?all_cases=true").json()["all_prioritized"]
     keys = [(-i["tier_rank"], -i["exposure_paise"], i["request_id"]) for i in items]
     assert keys == sorted(keys)
+
+
+def test_upload_without_a_document_routes_to_review_and_sample_is_demo_only(client: TestClient, engine: LiveEngine) -> None:
+    seller = {"X-Labyrinth-Role": "seller:P-0001"}
+    pdf = client.get("/demo/sample-invoice?layout=tally").content
+    assert pdf.startswith(b"%PDF-")
+    full = client.post("/requests", headers=seller, data={"case_id": "clean_goods", "attach": "po,grn,cnt,ewb"}, files={"file": ("a.pdf", pdf, "application/pdf")})
+    assert full.status_code == 200 and full.json()["decision"]["outcome"] == "conditionally_approved"
+    pdf2 = client.get("/demo/sample-invoice?layout=letterhead").content
+    no_grn = client.post("/requests", headers=seller, data={"case_id": "clean_goods", "attach": "po,cnt,ewb"}, files={"file": ("b.pdf", pdf2, "application/pdf")})
+    assert no_grn.json()["decision"]["outcome"] == "review"
+    bad = client.get("/demo/sample-invoice?variant=bad_arith").content
+    flawed = client.post("/requests", headers=seller, data={"case_id": "clean_goods"}, files={"file": ("c.pdf", bad, "application/pdf")})
+    assert flawed.json()["decision"]["outcome"] == "reject"
+    prod = TestClient(create_app(demo_mode=False, engine=engine))
+    assert prod.get("/demo/sample-invoice").status_code in (404, 405)
+
+
+def test_unknown_page_gets_the_html_404_and_the_landing_script_is_served(client: TestClient) -> None:
+    page = client.get("/nope", headers={"accept": "text/html"})
+    assert page.status_code == 404 and "Lost in the maze" in page.text
+    assert client.get("/landing.js").status_code == 200
+    assert client.get("/nope", headers={"accept": "application/json"}).json()["detail"]

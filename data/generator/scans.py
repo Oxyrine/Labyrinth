@@ -60,8 +60,8 @@ def render_noisy_scan_pdf_bytes(invoice: Invoice, seller: Party, buyer: Party, s
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=A4, invariant=1, pageCompression=1)
     c.setTitle("Scanned document")
-    c.setCreator("Tessera ReportLab Invariant v1")
-    c.setProducer("Tessera ReportLab Invariant v1")
+    c.setCreator("Labyrinth ReportLab Invariant v1")
+    c.setProducer("Labyrinth ReportLab Invariant v1")
     width, height = A4
     c.drawImage(ImageReader(io.BytesIO(png_bytes)), 0, 0, width=width, height=height, mask="auto")
     c.showPage()

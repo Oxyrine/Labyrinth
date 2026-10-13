@@ -515,7 +515,7 @@ def test_tolerances_within_bounds_and_exempt_ewaybill(monkeypatch: pytest.Monkey
     results_low_val = {r.check: r for r in run_match(ctx_low_val)}
     assert results_low_val["match.ewaybill"].status == CheckStatus.NOT_APPLICABLE
 
-    # TESSERA_MATCH_LIVE=0 sets source to FIXTURE
-    monkeypatch.setenv("TESSERA_MATCH_LIVE", "0")
+    # LABYRINTH_MATCH_LIVE=0 sets source to FIXTURE
+    monkeypatch.setenv("LABYRINTH_MATCH_LIVE", "0")
     fixture_res = run_match(ctx_low_val)
     assert all(r.source == CheckSource.FIXTURE for r in fixture_res)

@@ -79,7 +79,7 @@ def build_report_markdown(report_data: dict[str, Any]) -> str:
     lines: list[str] = [
         "# Synthetic benchmark results",
         "",
-        "Independent evaluation of Tessera's verification pipeline comparing the **rules-only baseline** "
+        "Independent evaluation of Labyrinth's verification pipeline comparing the **rules-only baseline** "
         "(document extraction, 3-way matching, and consortium deduplication/registry checks with graph ring analysis disabled) "
         "against the **full hybrid pipeline** (baseline rules + multi-hop network & related-party ring analysis).",
         "",

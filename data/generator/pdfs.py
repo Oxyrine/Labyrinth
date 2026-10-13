@@ -268,8 +268,8 @@ def render_invoice_pdf_bytes(
     c = canvas.Canvas(buf, pagesize=A4, invariant=1, pageCompression=1)
     c.setTitle(f"{_title(invoice)} {invoice.invoice_no}")
     c.setAuthor(seller.name)
-    c.setCreator("Tessera ReportLab Invariant v1")
-    c.setProducer("Tessera ReportLab Invariant v1")
+    c.setCreator("Labyrinth ReportLab Invariant v1")
+    c.setProducer("Labyrinth ReportLab Invariant v1")
 
     if layout == "tabular_gst":
         _draw_tabular_gst(c, invoice, seller, buyer)

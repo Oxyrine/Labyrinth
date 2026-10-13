@@ -1,4 +1,4 @@
-"""Single source of truth for Tessera domain models and wire contracts (schema_version: 1)."""
+"""Single source of truth for Labyrinth domain models and wire contracts (schema_version: 1)."""
 
 from __future__ import annotations
 
@@ -139,17 +139,17 @@ def _reject_float_int(v: Any) -> int:
     return v
 
 
-class TesseraModel(BaseModel):
+class LabyrinthModel(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
 
-class FieldProvenance(TesseraModel):
+class FieldProvenance(LabyrinthModel):
     value: Any
     confidence: float = Field(ge=0.0, le=1.0)
     page: int = Field(default=1, ge=1)
 
 
-class Party(TesseraModel):
+class Party(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     party_id: str = Field(pattern=r"^(P-[A-Za-z0-9_-]+|L[0-9]+)$")
     name: str
@@ -167,7 +167,7 @@ class Party(TesseraModel):
     public_key_hex: str | None = None
 
 
-class LineItem(TesseraModel):
+class LineItem(LabyrinthModel):
     line_no: int = Field(ge=1)
     description: str
     hsn_sac: str
@@ -198,7 +198,7 @@ class LineItem(TesseraModel):
         return _reject_float_int(v)
 
 
-class Invoice(TesseraModel):
+class Invoice(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     invoice_id: str = Field(pattern=r"^INV-[A-Za-z0-9_-]+$")
     invoice_no: str
@@ -239,7 +239,7 @@ class Invoice(TesseraModel):
         return _reject_float_int(v)
 
 
-class InvoiceVersion(TesseraModel):
+class InvoiceVersion(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     version_id: str = Field(pattern=r"^V-[A-Za-z0-9_-]+$")
     invoice_id: str = Field(pattern=r"^INV-[A-Za-z0-9_-]+$")
@@ -254,7 +254,7 @@ class InvoiceVersion(TesseraModel):
     created_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}T.*Z$")
 
 
-class EvidenceDoc(TesseraModel):
+class EvidenceDoc(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     doc_id: str = Field(pattern=r"^D-[A-Za-z0-9_-]+$")
     doc_type: DocType
@@ -294,7 +294,7 @@ class EvidenceDoc(TesseraModel):
         return self
 
 
-class BuyerAcceptance(TesseraModel):
+class BuyerAcceptance(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     acceptance_id: str
     invoice_id: str = Field(pattern=r"^INV-[A-Za-z0-9_-]+$")
@@ -311,7 +311,7 @@ class BuyerAcceptance(TesseraModel):
         return _reject_float_int(v)
 
 
-class FinancingRequest(TesseraModel):
+class FinancingRequest(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     request_id: str = Field(pattern=r"^REQ-[A-Za-z0-9_-]+$")
     invoice_id: str = Field(pattern=r"^INV-[A-Za-z0-9_-]+$")
@@ -331,7 +331,7 @@ class FinancingRequest(TesseraModel):
         return _reject_float_int(v)
 
 
-class Reservation(TesseraModel):
+class Reservation(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     reservation_id: str = Field(pattern=r"^RSV-[A-Za-z0-9_-]+$")
     invoice_identity: str
@@ -349,7 +349,7 @@ class Reservation(TesseraModel):
         return _reject_float_int(v)
 
 
-class CheckResult(TesseraModel):
+class CheckResult(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     check: str = Field(pattern=r"^[a-z0-9_]+(\.[a-z0-9_]+)+$")
     status: CheckStatus
@@ -375,7 +375,7 @@ class CheckResult(TesseraModel):
         return self
 
 
-class Override(TesseraModel):
+class Override(LabyrinthModel):
     override_id: str
     reviewer_id: str
     second_reviewer_id: str | None = None
@@ -386,7 +386,7 @@ class Override(TesseraModel):
     overridden_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}T.*Z$")
 
 
-class PricingQuote(TesseraModel):
+class PricingQuote(LabyrinthModel):
     grade: Grade
     advance_rate_bps: int = Field(ge=0, le=10000)
     advance_amount_paise: int = Field(ge=0)
@@ -411,7 +411,7 @@ class PricingQuote(TesseraModel):
         return _reject_float_int(v)
 
 
-class Decision(TesseraModel):
+class Decision(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     decision_id: str
     request_id: str = Field(pattern=r"^REQ-[A-Za-z0-9_-]+$")
@@ -431,7 +431,7 @@ class Decision(TesseraModel):
     decided_at: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}T.*Z$")
 
 
-class AuditEvent(TesseraModel):
+class AuditEvent(LabyrinthModel):
     schema_version: int = SCHEMA_VERSION
     seq: int = Field(ge=1)
     event_id: str
@@ -444,7 +444,7 @@ class AuditEvent(TesseraModel):
     hash: str
 
 
-class PaymentRecord(TesseraModel):
+class PaymentRecord(LabyrinthModel):
     payment_id: str
     invoice_id: str
     seller_id: str

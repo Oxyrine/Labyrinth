@@ -1,4 +1,4 @@
-# Single-writer folder ownership enforced across Tessera
+# Single-writer folder ownership enforced across Labyrinth
 /contract/        @Oxyrine
 /.github/         @Oxyrine
 /run.py           @Oxyrine

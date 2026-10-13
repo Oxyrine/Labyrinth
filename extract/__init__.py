@@ -1,4 +1,4 @@
-"""Tessera Stage 1 — Document Extraction & Deterministic Consistency Validators (`extract/`)."""
+"""Labyrinth Stage 1 — Document Extraction & Deterministic Consistency Validators (`extract/`)."""
 
 from __future__ import annotations
 

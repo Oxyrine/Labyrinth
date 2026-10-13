@@ -35,8 +35,8 @@ def load_tolerances() -> dict[str, int]:
 
 
 def get_check_source() -> CheckSource:
-    """Return CheckSource based on TESSERA_MATCH_LIVE environment variable."""
-    val = os.environ.get("TESSERA_MATCH_LIVE", "1").strip().lower()
+    """Return CheckSource based on LABYRINTH_MATCH_LIVE environment variable."""
+    val = os.environ.get("LABYRINTH_MATCH_LIVE", "1").strip().lower()
     if val in ("0", "false", "fixture", "no"):
         return CheckSource.FIXTURE
     return CheckSource.LIVE

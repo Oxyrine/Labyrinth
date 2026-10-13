@@ -1,6 +1,6 @@
 # Synthetic benchmark results
 
-Independent evaluation of Tessera's verification pipeline comparing the **rules-only baseline** (document extraction, 3-way matching, and consortium deduplication/registry checks with graph ring analysis disabled) against the **full hybrid pipeline** (baseline rules + multi-hop network & related-party ring analysis).
+Independent evaluation of Labyrinth's verification pipeline comparing the **rules-only baseline** (document extraction, 3-way matching, and consortium deduplication/registry checks with graph ring analysis disabled) against the **full hybrid pipeline** (baseline rules + multi-hop network & related-party ring analysis).
 
 **How to read these numbers.** They measure agreement with labels from our own synthetic generator, and the same team wrote the generator and the checks. They show the pipeline does what it is designed to do on these cases; they are not a claim about real-world fraud. Thresholds were frozen before the held-out regime was generated. `ring_evasive` includes plausible forgeries that are built to be undetectable and are reported as misses (section 6). Real-world validation is future work.
 
@@ -71,12 +71,12 @@ For planted fraud/mismatch/ring archetypes (`is_positive = true`), **Detection R
 | Pipeline Stage | Samples | `p50` Latency (ms) | `p95` Latency (ms) | Max Latency (ms) |
 | :--- | ---: | ---: | ---: | ---: |
 | `extract` | 404 | 15 ms | 18 ms | 18 ms |
-| `match` | 404 | 8 ms | 10 ms | 123 ms |
-| `dedup` | 404 | 4 ms | 6 ms | 118 ms |
-| `network` | 404 | 17 ms | 22 ms | 230 ms |
+| `match` | 404 | 9 ms | 11 ms | 125 ms |
+| `dedup` | 404 | 4 ms | 6 ms | 120 ms |
+| `network` | 404 | 16 ms | 22 ms | 222 ms |
 | `risk` | 404 | 5 ms | 6 ms | 6 ms |
 | `decision` | 404 | 2 ms | 3 ms | 3 ms |
-| `total` | 404 | 38 ms | 46 ms | 236 ms |
+| `total` | 404 | 38 ms | 45 ms | 227 ms |
 
 ## 6. Plausible-Forgery Evasive Cases (`ring_evasive`) — Honest Misses
 

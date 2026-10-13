@@ -1,4 +1,4 @@
-/* Tessera SVG Ring Visualizer & Shared Safe DOM Helpers (ring.js) */
+/* Labyrinth SVG Ring Visualizer & Shared Safe DOM Helpers (ring.js) */
 (function () {
   "use strict";
 
@@ -97,10 +97,10 @@
     if (!dot || !txt) return;
     if (isLive) {
       dot.classList.remove("offline");
-      txt.textContent = "LIVE SERVER";
+      txt.textContent = "Live connection";
     } else {
       dot.classList.add("offline");
-      txt.textContent = "OFFLINE SNAPSHOT (FIXTURE)";
+      txt.textContent = "Offline snapshot";
     }
   }
 
@@ -108,7 +108,7 @@
     var opts = options || {};
     var headers = Object.assign(
       {
-        "X-Tessera-Role": opts.roleOverride || getActiveRoleToken(),
+        "X-Labyrinth-Role": opts.roleOverride || getActiveRoleToken(),
         "Authorization": "Bearer " + (opts.roleOverride || getActiveRoleToken()),
       },
       opts.headers || {}
@@ -155,7 +155,7 @@
   }
 
   function offlineFallback(path, opts) {
-    var store = window.TESSERA_OFFLINE_DATA || { cases: {}, case_order: [], queue: [], eval_summary: {} };
+    var store = window.LABYRINTH_OFFLINE_DATA || { cases: {}, case_order: [], queue: [], eval_summary: {} };
     if (path === "/cases") {
       var list = (store.case_order || []).map(function (cid) {
         var c = store.cases[cid];
@@ -222,7 +222,9 @@
       var active = b.getAttribute("data-tab") === tabName;
       b.classList.toggle("active", active);
       b.setAttribute("aria-selected", active ? "true" : "false");
+      b.tabIndex = active ? 0 : -1;
     });
+    if (window.LabyrinthWorkspace) window.LabyrinthWorkspace.switchView(tabName);
     var panels = {
       seller: document.getElementById("panel-seller"),
       lender: document.getElementById("panel-lender"),
@@ -236,22 +238,23 @@
     });
   }
 
-  function updateGlobalPropertyBanner(threeProps) {
+  function updateGlobalPropertyBanner(threeProps, proof) {
     if (!threeProps) return;
     var bCons = document.getElementById("banner-badge-consistency");
     var bInt = document.getElementById("banner-badge-integrity");
     var bAuth = document.getElementById("banner-badge-authenticity");
 
     if (bCons && threeProps.consistency) {
-      bCons.textContent = threeProps.consistency.badge || threeProps.consistency.status.toUpperCase();
+      bCons.textContent = (threeProps.consistency.status === "pass" ? "Checks consistent" : "Needs attention");
       bCons.className = "badge badge-" + (threeProps.consistency.status || "pass");
     }
     if (bInt && threeProps.integrity) {
-      bInt.textContent = threeProps.integrity.badge || "VERIFIED";
+      bInt.textContent = threeProps.integrity.badge || "Awaiting verification";
       bInt.className = "badge badge-" + (threeProps.integrity.status || "pass");
+      if (proof) bInt.textContent = String(proof.integrity || "unavailable") + " · " + (proof.anchor_mode === "simulated" ? "simulated anchor " : "anchor ") + String(proof.anchoring || "pending");
     }
     if (bAuth && threeProps.authenticity) {
-      bAuth.textContent = threeProps.authenticity.badge || "LOW SIGNAL";
+      bAuth.textContent = (threeProps.authenticity.status === "pass" ? "No elevated signal" : "Review suggested");
       bAuth.className = "badge badge-" + (threeProps.authenticity.status || "pass");
     }
   }
@@ -287,10 +290,11 @@
       "aria-label": "Supply chain ring graph with invoice hops and corporate bridges",
     });
 
+    var markerPrefix = container.id || "network";
     // Arrowhead markers
     var defs = svgEl("defs", {}, [
       svgEl("marker", {
-        id: "arrow-invoice",
+        id: markerPrefix + "-invoice",
         viewBox: "0 0 10 10",
         refX: "9",
         refY: "5",
@@ -298,10 +302,10 @@
         markerHeight: "6",
         orient: "auto-start-reverse",
       }, [
-        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#38bdf8" }),
+        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#5F9179" }),
       ]),
       svgEl("marker", {
-        id: "arrow-bridge",
+        id: markerPrefix + "-bridge",
         viewBox: "0 0 10 10",
         refX: "9",
         refY: "5",
@@ -309,7 +313,7 @@
         markerHeight: "6",
         orient: "auto-start-reverse",
       }, [
-        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#f97316" }),
+        svgEl("path", { d: "M 0 1 L 10 5 L 0 9 z", fill: "#C8912F" }),
       ]),
     ]);
     svg.appendChild(defs);
@@ -348,9 +352,9 @@
           y1: y1,
           x2: x2,
           y2: y2,
-          stroke: "#38bdf8",
+          stroke: "#5F9179",
           "stroke-width": "2.2",
-          "marker-end": "url(#arrow-invoice)",
+          "marker-end": "url(#" + markerPrefix + "-invoice)",
         })
       );
 
@@ -360,7 +364,7 @@
         svgEl("text", {
           x: mx,
           y: my - 5,
-          fill: "#bae6fd",
+          fill: "#9A8F7E",
           "font-size": "10",
           "font-family": "monospace",
           "text-anchor": "middle",
@@ -381,17 +385,17 @@
         svgEl("path", {
           d: pathD,
           fill: "none",
-          stroke: "#f97316",
+          stroke: "#C8912F",
           "stroke-width": "2.4",
           "stroke-dasharray": "6,4",
-          "marker-end": "url(#arrow-bridge)",
+          "marker-end": "url(#" + markerPrefix + "-bridge)",
         })
       );
       svg.appendChild(
         svgEl("text", {
           x: midX,
           y: midY + 8,
-          fill: "#fdba74",
+          fill: "#C8912F",
           "font-size": "10.5",
           "font-weight": "bold",
           "text-anchor": "middle",
@@ -409,8 +413,8 @@
       g.appendChild(
         svgEl("circle", {
           r: "24",
-          fill: "#111a2e",
-          stroke: isAlert ? "#f59e0b" : "#10b981",
+          fill: "#1D1813",
+          stroke: isAlert ? "#D65A5A" : "#C9A227",
           "stroke-width": "2.5",
         })
       );
@@ -418,7 +422,7 @@
         svgEl("text", {
           x: "0",
           y: "-2",
-          fill: "#f8fafc",
+          fill: "#EFE7D8",
           "font-size": "10.5",
           "font-weight": "bold",
           "text-anchor": "middle",
@@ -429,7 +433,7 @@
         svgEl("text", {
           x: "0",
           y: "11",
-          fill: "#94a3b8",
+          fill: "#9A8F7E",
           "font-size": "9",
           "text-anchor": "middle",
           text: n.city || "",
@@ -444,8 +448,8 @@
           width: "84",
           height: "16",
           rx: "4",
-          fill: isAlert ? "#451a03" : "#064e3b",
-          stroke: isAlert ? "#f59e0b" : "#10b981",
+          fill: isAlert ? "#2A1A16" : "#241E12",
+          stroke: isAlert ? "#D65A5A" : "#C9A227",
           "stroke-width": "1",
         })
       );
@@ -453,7 +457,7 @@
         svgEl("text", {
           x: "0",
           y: "38",
-          fill: isAlert ? "#fcd34d" : "#6ee7b7",
+          fill: isAlert ? "#E58A8A" : "#E6C879",
           "font-size": "9.5",
           "font-family": "monospace",
           "text-anchor": "middle",
@@ -474,7 +478,7 @@
         var pct = Math.min(100, Math.round(val * 100));
         var card = el("div", { className: "signal-Mini-card" }, [
           el("div", { className: "signal-name-row" }, [
-            el("span", { text: sigKey }),
+            el("span", { text: ({s_flow:"Value flow",s_product:"Product",s_timing:"Timing",s_isolation:"Isolation",s_movement:"Movement",s_related:"Related parties",s_transform:"Transformation",s_rapid:"Velocity"})[sigKey] || sigKey }),
             el("span", { text: val.toFixed(2) }),
           ]),
           el("div", { className: "signal-bar-track" }, [
@@ -489,7 +493,8 @@
     }
   }
 
-  window.TesseraUI = {
+  window.LabyrinthUI = {
+    outcomeLabel: function (value) { return ({conditionally_approved:"Conditional approval",review:"Needs review",reject:"Declined"})[value] || value || "Awaiting decision"; },
     el: el,
     svgEl: svgEl,
     clear: clear,

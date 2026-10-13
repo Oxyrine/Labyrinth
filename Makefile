@@ -10,7 +10,7 @@ report:
 	python run.py report
 
 demo:
-	TESSERA_DEMO=1 python run.py demo
+	LABYRINTH_DEMO=1 python run.py demo
 
 test:
 	python run.py test

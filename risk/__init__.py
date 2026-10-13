@@ -1,4 +1,4 @@
-"""Tessera buyer & receivables risk scoring and pricing module (`risk/`)."""
+"""Labyrinth buyer & receivables risk scoring and pricing module (`risk/`)."""
 
 from risk.check import run
 from risk.features import RiskFeatures, compute_features, extract_network_tier

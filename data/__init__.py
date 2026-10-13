@@ -1,1 +1,1 @@
-"""Tessera synthetic economy data package."""
+"""Labyrinth synthetic economy data package."""

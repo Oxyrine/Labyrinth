@@ -42,8 +42,8 @@ def _format_check_entry(chk: CheckResult) -> dict[str, Any]:
 
 
 def _maybe_generate_external_llm_summary(card_payload: dict[str, Any]) -> str | None:
-    """Optionally call Claude Sonnet 5.5 when TESSERA_ALLOW_EXTERNAL_LLM=1; off by default."""
-    if os.environ.get("TESSERA_ALLOW_EXTERNAL_LLM") != "1":
+    """Optionally call Claude Sonnet 5.5 when LABYRINTH_ALLOW_EXTERNAL_LLM=1; off by default."""
+    if os.environ.get("LABYRINTH_ALLOW_EXTERNAL_LLM") != "1":
         return None
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:

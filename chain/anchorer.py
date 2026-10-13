@@ -123,7 +123,7 @@ class BackgroundAnchorer:
         self._stop_event.clear()
         self._thread = threading.Thread(
             target=self._run_loop,
-            name="TesseraBackgroundAnchorer",
+            name="LabyrinthBackgroundAnchorer",
             daemon=True,
         )
         self._thread.start()

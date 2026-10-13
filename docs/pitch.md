@@ -1,4 +1,4 @@
-# Tessera — Pitch & Q&A Framing (Synesis 26 · Problem 2)
+# Labyrinth — Pitch & Q&A Framing (Synesis 26 · Problem 2)
 
 ## Core Framing: Three Properties Never Conflated
 
@@ -34,10 +34,10 @@
 
 ## Verbatim Q&A Lines
 
-- **On proving real trade**: *"No software proves that physical goods moved if seller, buyer, and transporter collude. Tessera separates document consistency and cryptographic integrity from trade authenticity: it forces colluders to forge consistent multi-party logistics and corporate histories across time, and routes anomalies to human reviewers with exact numerical evidence."*
+- **On proving real trade**: *"No software proves that physical goods moved if seller, buyer, and transporter collude. Labyrinth separates document consistency and cryptographic integrity from trade authenticity: it forces colluders to forge consistent multi-party logistics and corporate histories across time, and routes anomalies to human reviewers with exact numerical evidence."*
 - **On blockchain usage**: *"Confidential commercial invoices never touch the chain. Files stay encrypted off-chain with AES-256-GCM; only salted RFC-6962 Merkle roots of event batches are anchored on Polygon Amoy asynchronously off the request path."*
 - **On pricing**: *"The scorecard and bps discount table are illustrative prototype policy to demonstrate risk-adjusted advance rates, not validated commercial lending prices."*
 - **On the benchmark**: *"These are synthetic benchmark results from a generator we wrote, with thresholds frozen before the held-out run. They show the system does what it is designed to do; they are not a claim about real fraud. Plausible forgeries are built to be undetectable and we report them as misses. Try to break it yourself in the Break-It box."*
 - **On extraction**: *"We read the printed text of three invoice layouts and never invent a field: unreadable documents go to a person. Scanned copies need OCR, which is an installed dependency, not a guess."*
 - **On keys and the registry**: *"Demo keys come from a public seed and the demo server signs for the selected role. The registry is a trusted service that sees invoice identities; production needs an oblivious PRF or private set intersection, a KMS and consortium governance."*
-- **On missing external APIs**: *"When GSTN/e-way bill or ERP endpoints are unreachable, Tessera emits `unavailable`, never `pass`, and routes required checks to human review."*
+- **On missing external APIs**: *"When GSTN/e-way bill or ERP endpoints are unreachable, Labyrinth emits `unavailable`, never `pass`, and routes required checks to human review."*

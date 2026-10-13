@@ -1,4 +1,4 @@
-"""Tessera CLI entry point (`world`, `pipeline`, `report`, `demo`, `test`, `guards`)."""
+"""Labyrinth CLI entry point (`world`, `pipeline`, `report`, `demo`, `test`, `guards`)."""
 
 from __future__ import annotations
 
@@ -69,7 +69,7 @@ def cmd_report(args: argparse.Namespace) -> int:
 def cmd_demo(args: argparse.Namespace) -> int:
     import uvicorn
 
-    os.environ.setdefault("TESSERA_DEMO", "1")
+    os.environ.setdefault("LABYRINTH_DEMO", "1")
     port = int(os.environ.get("PORT", str(args.port)))
     uvicorn.run("app.server:app", host="127.0.0.1", port=port, reload=False)
     return 0
@@ -114,7 +114,7 @@ def cmd_guards(_args: argparse.Namespace) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="run.py", description="Tessera unified task runner")
+    parser = argparse.ArgumentParser(prog="run.py", description="Labyrinth unified task runner")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_world = sub.add_parser("world", help="Generate synthetic economy")

@@ -11,7 +11,7 @@ from contract.models import (
     SCHEMA_VERSION,
     Invoice,
     InvoiceVersion,
-    TesseraModel,
+    LabyrinthModel,
     VersionKind,
     canonical_sha256,
 )
@@ -26,7 +26,7 @@ VERSION_RECORD_KEYS = (
 )
 
 
-class VersionRecord(TesseraModel):
+class VersionRecord(LabyrinthModel):
     """Canonical 6-field version commitment committed into `invoice.version_created` events."""
 
     version_id: str = Field(pattern=r"^V-[A-Za-z0-9_-]+$")

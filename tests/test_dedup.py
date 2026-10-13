@@ -401,7 +401,7 @@ def test_registry_lifecycle_settled_stale_expired_reject_and_idempotent_confirm(
     req_refinance = req_refinance.model_copy(
         update={"seller_signature_hex": sign_financing_request(req_refinance, seller_priv)}
     )
-    monkeypatch.setenv("TESSERA_DISCLOSE_LENDER", "0")
+    monkeypatch.setenv("LABYRINTH_DISCLOSE_LENDER", "0")
     r_refinance = reg.reserve(
         op_id="op-res-s2",
         request=req_refinance,

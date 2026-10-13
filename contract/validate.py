@@ -171,7 +171,7 @@ def validate_all() -> tuple[int, list[str]]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate Tessera JSON artifacts and export schemas.")
+    parser = argparse.ArgumentParser(description="Validate Labyrinth JSON artifacts and export schemas.")
     parser.add_argument("--export-schemas", action="store_true", help="Export JSON schemas to contract/schemas/")
     args = parser.parse_args()
 

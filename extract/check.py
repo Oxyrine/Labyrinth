@@ -12,7 +12,7 @@ from extract.validators import run_invoice_validators
 
 
 def _resolve_check_source() -> CheckSource:
-    live_flag = os.environ.get("TESSERA_EXTRACT_LIVE", "1").strip()
+    live_flag = os.environ.get("LABYRINTH_EXTRACT_LIVE", "1").strip()
     return CheckSource.LIVE if live_flag == "1" else CheckSource.FIXTURE
 
 
