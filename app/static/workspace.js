@@ -7,6 +7,7 @@
     lender: ["Financing", "Financing workspace", "A clear view of every invoice, every check, and your next decision."],
     seller: ["New invoice", "Start with an invoice", "Bring the invoice and its supporting evidence together."],
     queue: ["Review queue", "A closer look", "Resolve flagged requests with the evidence in front of you."],
+    network: ["Network", "The whole market", "Every firm, who invoiced whom, who is related to whom, and the loops that were flagged."],
     verifier: ["Audit & sandbox", "Trust you can trace", "Verify a record, explore its history, or challenge the network check."]
   };
   function text(id, value) { var node = document.getElementById(id); if (node) node.textContent = value; }
@@ -86,6 +87,7 @@
     var title=document.getElementById("page-title"); title.replaceChildren(document.createTextNode(copy[1]),UI.el("span",{text:"."}));
     text("page-description",copy[2]);
     document.getElementById("new-invoice-btn").classList.toggle("hidden",name === "seller");
+    if (name === "network" && window.LabyrinthNetwork) window.LabyrinthNetwork.show();
   }
 
   /* The role picker is real: every action belongs to a role, and the server refuses the wrong one. */

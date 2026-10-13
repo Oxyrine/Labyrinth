@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Yellowtail&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app.css?v=20261013-4">
+  <link rel="stylesheet" href="app.css?v=20261013-5">
 </head>
 <body>
   <a href="#main-workspace" class="skip-link">Skip to main workspace</a>
@@ -60,7 +60,9 @@
       <span class="stepper-sep" aria-hidden="true"></span>
       <button type="button" role="tab" aria-selected="false" aria-controls="panel-queue" id="tab-btn-queue" class="tab-btn stepper-item" data-tab="queue"><span class="step-num">03</span><span class="step-label">Review</span><span class="step-sub">What needs a person?</span></button>
       <span class="stepper-sep" aria-hidden="true"></span>
-      <button type="button" role="tab" aria-selected="false" aria-controls="panel-verifier" id="tab-btn-verifier" class="tab-btn stepper-item" data-tab="verifier"><span class="step-num">04</span><span class="step-label">Verify</span><span class="step-sub">What is the evidence?</span></button>
+      <button type="button" role="tab" aria-selected="false" aria-controls="panel-network" id="tab-btn-network" class="tab-btn stepper-item" data-tab="network"><span class="step-num">04</span><span class="step-label">Network</span><span class="step-sub">Who trades with whom?</span></button>
+      <span class="stepper-sep" aria-hidden="true"></span>
+      <button type="button" role="tab" aria-selected="false" aria-controls="panel-verifier" id="tab-btn-verifier" class="tab-btn stepper-item" data-tab="verifier"><span class="step-num">05</span><span class="step-label">Verify</span><span class="step-sub">What is the evidence?</span></button>
     </div>
   </nav>
     <section id="tour-drawer" class="tour-drawer hidden" aria-label="6-Step Live Judge Demo Tour">
@@ -344,6 +346,57 @@
       </div>
     </section>
 
+    <!-- NETWORK MAP -->
+    <section id="panel-network" role="tabpanel" aria-labelledby="tab-btn-network" class="tab-panel hidden">
+      <div class="card net-card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Every firm and how they connect</h2>
+            <p class="card-subtitle">Lines are invoices between firms. Dashed lines join firms that share a director, bank account, address or similar. Red marks loops the network check flagged.</p>
+          </div>
+          <span class="badge badge-info" id="net-source">Loading…</span>
+        </div>
+        <div id="net-status" class="status-banner hidden" role="status"></div>
+        <div class="net-controls">
+          <div class="net-toggles" role="group" aria-label="Layers">
+            <button type="button" id="net-toggle-trade" class="btn btn-sm active" aria-pressed="true">Invoices</button>
+            <button type="button" id="net-toggle-related" class="btn btn-sm active" aria-pressed="true">Related firms</button>
+            <button type="button" id="net-toggle-flagged" class="btn btn-sm" aria-pressed="false">Flagged only</button>
+          </div>
+          <label class="sr-only" for="net-ring-select">Show one flagged loop</label>
+          <select id="net-ring-select" class="input-select net-select"><option value="">All flagged loops</option></select>
+          <label class="sr-only" for="net-industry-filter">Industry</label>
+          <select id="net-industry-filter" class="input-select net-select">
+            <option value="all">All industries</option><option value="manufacturing">Manufacturing</option><option value="trading">Trading</option><option value="distribution">Distribution</option><option value="services">Services</option>
+          </select>
+          <label class="search-field net-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="net-search" type="search" placeholder="Find a firm…" aria-label="Find a firm by name, ID or GSTIN"></label>
+          <div class="net-zoom">
+            <button type="button" id="net-zoom-out" class="btn btn-sm" aria-label="Zoom out">−</button>
+            <span id="net-zoom-val" class="mono-id">100%</span>
+            <button type="button" id="net-zoom-in" class="btn btn-sm" aria-label="Zoom in">+</button>
+            <button type="button" id="net-zoom-reset" class="btn btn-sm">Fit</button>
+            <button type="button" id="net-reset-btn" class="btn btn-sm btn-ghost">Reset</button>
+          </div>
+        </div>
+        <div class="network-layout">
+          <div class="network-canvas-wrap">
+            <svg id="network-svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of firms, invoices between them and flagged loops"></svg>
+            <div class="net-legend">
+              <span><i class="lg-dot" style="background:#C8912F"></i>Manufacturing</span>
+              <span><i class="lg-dot" style="background:#9A86B0"></i>Trading</span>
+              <span><i class="lg-dot" style="background:#5F9179"></i>Distribution</span>
+              <span><i class="lg-dot" style="background:#9A8F7E"></i>Services</span>
+              <span><i class="lg-line" style="background:#D65A5A"></i>Flagged loop</span>
+              <span><i class="lg-line dashed"></i>Related firms</span>
+              <span class="net-hint">Scroll to zoom · drag to pan · click a firm</span>
+            </div>
+          </div>
+          <aside id="network-rail" class="network-rail" aria-label="Details" aria-live="polite"></aside>
+        </div>
+        <p class="policy-notice">This is a generated market, separate from the 25 demo invoices. Flagged loops come from running the real network check on it. A flag means "worth a person's time", not "proven fake".</p>
+      </div>
+    </section>
+
     <!-- TAB 4: HYBRID AUDIT VERIFIER & JUDGE BREAK-IT -->
     <section id="panel-verifier" role="tabpanel" aria-labelledby="tab-btn-verifier" class="tab-panel hidden">
       <div class="grid-2col">
@@ -464,14 +517,15 @@
   <footer class="workspace-footer"><span><span class="footer-dot"></span> Labyrinth · Verify. Decide. Trace.</span><span>Demo evidence · Illustrative pricing · Simulated anchoring unless configured</span></footer></main>
   </div>
 
-  <script src="data.js?v=20261013-4"></script>
-  <script src="ring.js?v=20261013-4"></script>
-  <script src="workspace.js?v=20261013-4"></script>
-  <script src="seller.js?v=20261013-4"></script>
-  <script src="lender.js?v=20261013-4"></script>
-  <script src="queue.js?v=20261013-4"></script>
-  <script src="verifier.js?v=20261013-4"></script>
-  <script src="tour.js?v=20261013-4"></script>
-  <script src="landing.js?v=20261013-4"></script>
+  <script src="data.js?v=20261013-5"></script>
+  <script src="ring.js?v=20261013-5"></script>
+  <script src="workspace.js?v=20261013-5"></script>
+  <script src="seller.js?v=20261013-5"></script>
+  <script src="lender.js?v=20261013-5"></script>
+  <script src="queue.js?v=20261013-5"></script>
+  <script src="verifier.js?v=20261013-5"></script>
+  <script src="network.js?v=20261013-5"></script>
+  <script src="tour.js?v=20261013-5"></script>
+  <script src="landing.js?v=20261013-5"></script>
 </body>
 </html>

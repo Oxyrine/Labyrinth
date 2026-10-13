@@ -15,6 +15,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.live import LiveEngine  # noqa: E402
+from app.market import build_market  # noqa: E402
 
 OUT = Path(__file__).resolve().parent / "static" / "data.js"
 
@@ -29,6 +30,7 @@ def build_snapshot() -> dict:
         "case_order": list(engine.order),
         "cases": {cid: engine.card(cid) for cid in engine.order},
         "queue": engine.queue(),
+        "market": build_market(),
         "eval_summary": json.loads(report.read_text(encoding="utf-8")) if report.is_file() else None,
     }
 

@@ -76,8 +76,9 @@ after the freeze are additive only. Pricing is labelled illustrative everywhere 
 
 ## Interface
 
-A landing screen, then four views in a numbered stepper: Finance (decision and evidence), Submit (upload a PDF and see what was
-read), Review (queue, one-invoice-one-lender race, audited overrides), Verify (integrity and anchoring, break-it sandbox,
+A landing screen, then five views in a numbered stepper: Finance (decision and evidence), Submit (upload a PDF and see what was
+read), Review (queue, one-invoice-one-lender race, audited overrides), Network (map of the 200-firm generated market: invoices,
+related firms, flagged loops), Verify (integrity and anchoring, break-it sandbox,
 benchmark). The look (warm ink, gold seal, serif display type) takes its direction from the Circe console; the code is new.
 Fonts load from Google Fonts and fall back to system fonts offline; the CSP allows only `fonts.googleapis.com` and
 `fonts.gstatic.com` for that. Without the server, `file://` opens a read-only snapshot.

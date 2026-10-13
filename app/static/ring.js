@@ -156,6 +156,7 @@
 
   function offlineFallback(path, opts) {
     var store = window.LABYRINTH_OFFLINE_DATA || { cases: {}, case_order: [], queue: [], eval_summary: {} };
+    if (path === "/network") return store.market || { available: false, message: "The market map needs the offline snapshot rebuilt." };
     if (path === "/cases") {
       var list = (store.case_order || []).map(function (cid) {
         var c = store.cases[cid];
@@ -229,6 +230,7 @@
       seller: document.getElementById("panel-seller"),
       lender: document.getElementById("panel-lender"),
       queue: document.getElementById("panel-queue"),
+      network: document.getElementById("panel-network"),
       verifier: document.getElementById("panel-verifier"),
     };
     Object.keys(panels).forEach(function (k) {

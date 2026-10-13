@@ -24,6 +24,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.live import Conflict, LiveEngine, NotFound  # noqa: E402
+from app.market import build_market  # noqa: E402
 from extract import ExtractionError  # noqa: E402
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -138,7 +139,7 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
 
     @app.exception_handler(StarletteHTTPException)
     async def _http(request: Request, exc: StarletteHTTPException) -> Response:
-        api = request.url.path.startswith(("/requests", "/audit", "/cases", "/queue", "/overrides", "/reservations", "/breakit", "/demo", "/health"))
+        api = request.url.path.startswith(("/requests", "/audit", "/cases", "/network", "/queue", "/overrides", "/reservations", "/breakit", "/demo", "/health"))
         if exc.status_code == 404 and not api and "text/html" in request.headers.get("accept", ""):
             return HTMLResponse((STATIC_DIR / "404.html").read_text(encoding="utf-8"), status_code=404)
         return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=getattr(exc, "headers", None))
@@ -158,6 +159,12 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
     @app.get("/health")
     async def health() -> dict[str, Any]:
         return {"status": "ok", "demo_mode": is_demo, "anchor": engine.anchor_label(), "network_off": engine.network_off}
+
+    market = build_market()
+
+    @app.get("/network")
+    async def network() -> dict[str, Any]:
+        return market
 
     @app.get("/cases")
     async def cases() -> dict[str, Any]:
@@ -279,7 +286,7 @@ def create_app(demo_mode: bool | None = None, engine: LiveEngine | None = None) 
 
     @app.get("/{asset_name}")
     async def root_asset(asset_name: str) -> FileResponse:
-        if asset_name in {"app.css", "data.js", "seller.js", "lender.js", "queue.js", "verifier.js", "ring.js", "tour.js", "workspace.js", "landing.js"}:
+        if asset_name in {"app.css", "data.js", "seller.js", "lender.js", "queue.js", "verifier.js", "ring.js", "tour.js", "workspace.js", "landing.js", "network.js"}:
             path = STATIC_DIR / asset_name
             if path.exists():
                 return FileResponse(str(path), media_type="text/css" if asset_name.endswith(".css") else "application/javascript")

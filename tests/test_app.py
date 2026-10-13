@@ -178,3 +178,12 @@ def test_unknown_page_gets_the_html_404_and_the_landing_script_is_served(client:
     assert page.status_code == 404 and "Lost in the maze" in page.text
     assert client.get("/landing.js").status_code == 200
     assert client.get("/nope", headers={"accept": "application/json"}).json()["detail"]
+
+
+def test_market_map_comes_from_pipeline_output_not_labels(client: TestClient) -> None:
+    m = client.get("/network").json()
+    assert m["available"] and len(m["nodes"]) > 100 and m["trade_edges"] and m["related_edges"]
+    assert m["rings"] and all(r["tier"] in ("medium", "high") and len(r["members"]) >= 3 for r in m["rings"])
+    ids = {n["id"] for n in m["nodes"]}
+    assert all(set(r["members"]) <= ids for r in m["rings"])
+    assert "ground_truth" not in (ROOT / "app" / "market.py").read_text(encoding="utf-8")
