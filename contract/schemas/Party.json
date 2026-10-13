@@ -1,0 +1,112 @@
+{
+  "$defs": {
+    "IndustryClass": {
+      "enum": [
+        "manufacturing",
+        "trading",
+        "distribution",
+        "services"
+      ],
+      "title": "IndustryClass",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "address": {
+      "title": "Address",
+      "type": "string"
+    },
+    "bank_account_hash": {
+      "title": "Bank Account Hash",
+      "type": "string"
+    },
+    "cin": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cin"
+    },
+    "city": {
+      "title": "City",
+      "type": "string"
+    },
+    "directors": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Directors",
+      "type": "array"
+    },
+    "gstin": {
+      "title": "Gstin",
+      "type": "string"
+    },
+    "industry_class": {
+      "$ref": "#/$defs/IndustryClass"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "pan": {
+      "title": "Pan",
+      "type": "string"
+    },
+    "party_id": {
+      "pattern": "^(P-[A-Za-z0-9_-]+|L[0-9]+)$",
+      "title": "Party Id",
+      "type": "string"
+    },
+    "phone": {
+      "title": "Phone",
+      "type": "string"
+    },
+    "pincode": {
+      "title": "Pincode",
+      "type": "string"
+    },
+    "public_key_hex": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Public Key Hex"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "state_code": {
+      "title": "State Code",
+      "type": "string"
+    }
+  },
+  "required": [
+    "party_id",
+    "name",
+    "gstin",
+    "pan",
+    "state_code",
+    "industry_class",
+    "address",
+    "pincode",
+    "city",
+    "phone",
+    "bank_account_hash"
+  ],
+  "title": "Party",
+  "type": "object"
+}

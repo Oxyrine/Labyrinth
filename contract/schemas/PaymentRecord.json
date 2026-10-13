@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "amount_paise": {
+      "minimum": 0,
+      "title": "Amount Paise",
+      "type": "integer"
+    },
+    "buyer_id": {
+      "title": "Buyer Id",
+      "type": "string"
+    },
+    "disputed": {
+      "default": false,
+      "title": "Disputed",
+      "type": "boolean"
+    },
+    "dpd": {
+      "default": 0,
+      "title": "Dpd",
+      "type": "integer"
+    },
+    "due_date": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "title": "Due Date",
+      "type": "string"
+    },
+    "invoice_id": {
+      "title": "Invoice Id",
+      "type": "string"
+    },
+    "paid_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Paid Date"
+    },
+    "payment_id": {
+      "title": "Payment Id",
+      "type": "string"
+    },
+    "seller_id": {
+      "title": "Seller Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "payment_id",
+    "invoice_id",
+    "seller_id",
+    "buyer_id",
+    "amount_paise",
+    "due_date"
+  ],
+  "title": "PaymentRecord",
+  "type": "object"
+}

@@ -1,0 +1,6 @@
+{
+  "case_id": "clean_goods",
+  "expected_outcome": "conditionally_approved",
+  "failing_checks": [],
+  "warn_checks": []
+}

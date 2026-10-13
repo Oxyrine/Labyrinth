@@ -1,0 +1,26 @@
+name: Tessera Slow CI (PDFs, Scans, Anchoring)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  slow-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install system OCR and Python dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y tesseract-ocr
+          pip install -r requirements.txt
+      - name: Full world generation & PDF hash check
+        run: |
+          python run.py world --regime A
+          git diff --exit-code data/out/pdf_hashes.json
+      - name: Run slow extraction & anchoring tests
+        run: pytest -q -m slow

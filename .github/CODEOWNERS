@@ -1,0 +1,17 @@
+# Single-writer folder ownership enforced across Tessera
+/contract/        @Oxyrine
+/.github/         @Oxyrine
+/run.py           @Oxyrine
+/Makefile         @Oxyrine
+/fixtures/        @Oxyrine
+/data/            @Oxyrine
+/extract/         @Oxyrine
+/match/           @Oxyrine
+/dedup/           @Oxyrine
+/network/         @Oxyrine
+/risk/            @Oxyrine
+/workflow/        @Oxyrine
+/audit/           @Oxyrine
+/chain/           @Oxyrine
+/app/             @Oxyrine
+/eval/            @Oxyrine

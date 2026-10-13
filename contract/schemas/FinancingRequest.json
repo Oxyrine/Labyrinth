@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "RequestState": {
+      "enum": [
+        "submitted",
+        "extracted",
+        "verified",
+        "network_checked",
+        "scored",
+        "cond_approved",
+        "in_review",
+        "rejected",
+        "buyer_accepted",
+        "reservation_confirmed",
+        "disbursed",
+        "repaid",
+        "overdue",
+        "settled",
+        "disputed"
+      ],
+      "title": "RequestState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "buyer_id": {
+      "title": "Buyer Id",
+      "type": "string"
+    },
+    "invoice_id": {
+      "pattern": "^INV-[A-Za-z0-9_-]+$",
+      "title": "Invoice Id",
+      "type": "string"
+    },
+    "lender_id": {
+      "title": "Lender Id",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^REQ-[A-Za-z0-9_-]+$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "requested_amount_paise": {
+      "minimum": 0,
+      "title": "Requested Amount Paise",
+      "type": "integer"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seller_id": {
+      "title": "Seller Id",
+      "type": "string"
+    },
+    "seller_signature_hex": {
+      "title": "Seller Signature Hex",
+      "type": "string"
+    },
+    "state": {
+      "$ref": "#/$defs/RequestState",
+      "default": "submitted"
+    },
+    "submitted_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T.*Z$",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "tenor_days": {
+      "default": 60,
+      "minimum": 1,
+      "title": "Tenor Days",
+      "type": "integer"
+    },
+    "version_id": {
+      "pattern": "^V-[A-Za-z0-9_-]+$",
+      "title": "Version Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "invoice_id",
+    "version_id",
+    "seller_id",
+    "buyer_id",
+    "lender_id",
+    "requested_amount_paise",
+    "seller_signature_hex",
+    "submitted_at"
+  ],
+  "title": "FinancingRequest",
+  "type": "object"
+}

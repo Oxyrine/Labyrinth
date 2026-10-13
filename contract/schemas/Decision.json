@@ -1,0 +1,388 @@
+{
+  "$defs": {
+    "CheckResult": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$",
+          "title": "Check",
+          "type": "string"
+        },
+        "details": {
+          "additionalProperties": true,
+          "title": "Details",
+          "type": "object"
+        },
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "evidence_weight": {
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Evidence Weight",
+          "type": "number"
+        },
+        "refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Refs",
+          "type": "array"
+        },
+        "schema_version": {
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "source": {
+          "$ref": "#/$defs/CheckSource",
+          "default": "live"
+        },
+        "status": {
+          "$ref": "#/$defs/CheckStatus"
+        },
+        "verification_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VerificationStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "check",
+        "status",
+        "severity",
+        "evidence"
+      ],
+      "title": "CheckResult",
+      "type": "object"
+    },
+    "CheckSource": {
+      "enum": [
+        "live",
+        "fixture"
+      ],
+      "title": "CheckSource",
+      "type": "string"
+    },
+    "CheckStatus": {
+      "enum": [
+        "pass",
+        "warn",
+        "fail",
+        "unavailable",
+        "not_applicable"
+      ],
+      "title": "CheckStatus",
+      "type": "string"
+    },
+    "Grade": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "title": "Grade",
+      "type": "string"
+    },
+    "Outcome": {
+      "enum": [
+        "conditionally_approved",
+        "review",
+        "reject"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "Override": {
+      "additionalProperties": false,
+      "properties": {
+        "new_outcome": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "overridden_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T.*Z$",
+          "title": "Overridden At",
+          "type": "string"
+        },
+        "override_id": {
+          "title": "Override Id",
+          "type": "string"
+        },
+        "prior_outcome": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "reason": {
+          "minLength": 3,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reviewer_id": {
+          "title": "Reviewer Id",
+          "type": "string"
+        },
+        "scores_snapshot": {
+          "additionalProperties": true,
+          "title": "Scores Snapshot",
+          "type": "object"
+        },
+        "second_reviewer_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Second Reviewer Id"
+        }
+      },
+      "required": [
+        "override_id",
+        "reviewer_id",
+        "reason",
+        "prior_outcome",
+        "new_outcome",
+        "overridden_at"
+      ],
+      "title": "Override",
+      "type": "object"
+    },
+    "PricingQuote": {
+      "additionalProperties": false,
+      "properties": {
+        "advance_amount_paise": {
+          "minimum": 0,
+          "title": "Advance Amount Paise",
+          "type": "integer"
+        },
+        "advance_rate_bps": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Advance Rate Bps",
+          "type": "integer"
+        },
+        "annual_rate_bps": {
+          "minimum": 0,
+          "title": "Annual Rate Bps",
+          "type": "integer"
+        },
+        "arithmetic_trace": {
+          "title": "Arithmetic Trace",
+          "type": "string"
+        },
+        "discount_paise": {
+          "minimum": 0,
+          "title": "Discount Paise",
+          "type": "integer"
+        },
+        "grade": {
+          "$ref": "#/$defs/Grade"
+        },
+        "net_disbursement_paise": {
+          "minimum": 0,
+          "title": "Net Disbursement Paise",
+          "type": "integer"
+        },
+        "policy_notice": {
+          "default": "Illustrative prototype policy, not validated lending prices.",
+          "title": "Policy Notice",
+          "type": "string"
+        },
+        "tenor_days": {
+          "minimum": 0,
+          "title": "Tenor Days",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "grade",
+        "advance_rate_bps",
+        "advance_amount_paise",
+        "annual_rate_bps",
+        "tenor_days",
+        "discount_paise",
+        "net_disbursement_paise",
+        "arithmetic_trace"
+      ],
+      "title": "PricingQuote",
+      "type": "object"
+    },
+    "RequestState": {
+      "enum": [
+        "submitted",
+        "extracted",
+        "verified",
+        "network_checked",
+        "scored",
+        "cond_approved",
+        "in_review",
+        "rejected",
+        "buyer_accepted",
+        "reservation_confirmed",
+        "disbursed",
+        "repaid",
+        "overdue",
+        "settled",
+        "disputed"
+      ],
+      "title": "RequestState",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "hard"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Tier": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Tier",
+      "type": "string"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "unverified",
+        "signature_checked",
+        "independently_confirmed"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/CheckResult"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "conditions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Conditions",
+      "type": "array"
+    },
+    "decided_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T.*Z$",
+      "title": "Decided At",
+      "type": "string"
+    },
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "grade": {
+      "$ref": "#/$defs/Grade"
+    },
+    "invoice_id": {
+      "pattern": "^INV-[A-Za-z0-9_-]+$",
+      "title": "Invoice Id",
+      "type": "string"
+    },
+    "network_tier": {
+      "$ref": "#/$defs/Tier",
+      "default": "low"
+    },
+    "outcome": {
+      "$ref": "#/$defs/Outcome"
+    },
+    "overridden_by": {
+      "items": {
+        "$ref": "#/$defs/Override"
+      },
+      "title": "Overridden By",
+      "type": "array"
+    },
+    "pricing": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PricingQuote"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "request_id": {
+      "pattern": "^REQ-[A-Za-z0-9_-]+$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "score_points": {
+      "title": "Score Points",
+      "type": "integer"
+    },
+    "stage_latencies_ms": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Stage Latencies Ms",
+      "type": "object"
+    },
+    "state": {
+      "$ref": "#/$defs/RequestState"
+    },
+    "top_reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Top Reasons",
+      "type": "array"
+    },
+    "version_id": {
+      "pattern": "^V-[A-Za-z0-9_-]+$",
+      "title": "Version Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_id",
+    "request_id",
+    "invoice_id",
+    "version_id",
+    "outcome",
+    "state",
+    "grade",
+    "score_points",
+    "decided_at"
+  ],
+  "title": "Decision",
+  "type": "object"
+}

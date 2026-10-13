@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "FieldProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "page": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "value": {
+          "title": "Value"
+        }
+      },
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "title": "FieldProvenance",
+      "type": "object"
+    },
+    "VersionKind": {
+      "enum": [
+        "initial",
+        "resubmission",
+        "amended",
+        "unexplained_change",
+        "extraction_revision"
+      ],
+      "title": "VersionKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T.*Z$",
+      "title": "Created At",
+      "type": "string"
+    },
+    "field_provenance": {
+      "additionalProperties": {
+        "$ref": "#/$defs/FieldProvenance"
+      },
+      "title": "Field Provenance",
+      "type": "object"
+    },
+    "field_root": {
+      "title": "Field Root",
+      "type": "string"
+    },
+    "field_salts": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Field Salts",
+      "type": "object"
+    },
+    "file_sha256": {
+      "title": "File Sha256",
+      "type": "string"
+    },
+    "invoice_id": {
+      "pattern": "^INV-[A-Za-z0-9_-]+$",
+      "title": "Invoice Id",
+      "type": "string"
+    },
+    "invoice_identity": {
+      "title": "Invoice Identity",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/VersionKind",
+      "default": "initial"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "tamper_hints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tamper Hints",
+      "type": "array"
+    },
+    "version_id": {
+      "pattern": "^V-[A-Za-z0-9_-]+$",
+      "title": "Version Id",
+      "type": "string"
+    },
+    "version_no": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Version No",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version_id",
+    "invoice_id",
+    "invoice_identity",
+    "file_sha256",
+    "field_root",
+    "created_at"
+  ],
+  "title": "InvoiceVersion",
+  "type": "object"
+}

@@ -1,0 +1,84 @@
+[
+  {
+    "check": "extract.gstin_checksum",
+    "details": {},
+    "evidence": [
+      "Seller GSTIN 27AABCS1429B1ZU and buyer GSTIN 27AABCB5812K1ZP passed mod-36 checksum verification."
+    ],
+    "evidence_weight": 1.0,
+    "refs": [
+      "INV-FX-0001"
+    ],
+    "schema_version": 1,
+    "severity": "hard",
+    "source": "live",
+    "status": "pass",
+    "verification_status": "independently_confirmed"
+  },
+  {
+    "check": "network.ring",
+    "details": {},
+    "evidence": [
+      "\u20b94,02,00,000 invoiced in and \u20b94,05,00,000 invoiced out across 5 firms in Ring R01 (0.7% retained).",
+      "Vehicle MH12AB1234 recorded on EWB-271001 in Pune at 09:10 and EWB-331002 in Chennai at 12:05 (1,190 km in 2.9 h)."
+    ],
+    "evidence_weight": 0.7,
+    "refs": [
+      "R01",
+      "INV-FX-0001"
+    ],
+    "schema_version": 1,
+    "severity": "high",
+    "source": "live",
+    "status": "warn",
+    "verification_status": "signature_checked"
+  },
+  {
+    "check": "extract.arith_total",
+    "details": {},
+    "evidence": [
+      "Printed grand total \u20b910,50,000 exceeds subtotal \u20b98,50,000 plus total tax \u20b91,50,000 (\u20b910,00,000) by \u20b950,000."
+    ],
+    "evidence_weight": 0.4,
+    "refs": [
+      "INV-FX-0002"
+    ],
+    "schema_version": 1,
+    "severity": "hard",
+    "source": "live",
+    "status": "fail",
+    "verification_status": "unverified"
+  },
+  {
+    "check": "match.ewaybill",
+    "details": {},
+    "evidence": [
+      "E-way bill portal endpoint timed out after 2,000 ms for invoice INV-FX-0001 (\u20b910,00,000 > \u20b950,000 threshold); routing to human review."
+    ],
+    "evidence_weight": 1.0,
+    "refs": [
+      "INV-FX-0001"
+    ],
+    "schema_version": 1,
+    "severity": "medium",
+    "source": "fixture",
+    "status": "unavailable",
+    "verification_status": null
+  },
+  {
+    "check": "match.three_way.grn_presence",
+    "details": {},
+    "evidence": [
+      "Invoice contains only SAC 998314 IT consulting services; physical Goods Receipt Note (GRN) check does not apply."
+    ],
+    "evidence_weight": 1.0,
+    "refs": [
+      "INV-FX-0003"
+    ],
+    "schema_version": 1,
+    "severity": "info",
+    "source": "live",
+    "status": "not_applicable",
+    "verification_status": null
+  }
+]

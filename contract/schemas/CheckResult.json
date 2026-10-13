@@ -1,0 +1,112 @@
+{
+  "$defs": {
+    "CheckSource": {
+      "enum": [
+        "live",
+        "fixture"
+      ],
+      "title": "CheckSource",
+      "type": "string"
+    },
+    "CheckStatus": {
+      "enum": [
+        "pass",
+        "warn",
+        "fail",
+        "unavailable",
+        "not_applicable"
+      ],
+      "title": "CheckStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "hard"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "unverified",
+        "signature_checked",
+        "independently_confirmed"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "check": {
+      "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$",
+      "title": "Check",
+      "type": "string"
+    },
+    "details": {
+      "additionalProperties": true,
+      "title": "Details",
+      "type": "object"
+    },
+    "evidence": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "evidence_weight": {
+      "default": 1.0,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Evidence Weight",
+      "type": "number"
+    },
+    "refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Refs",
+      "type": "array"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "source": {
+      "$ref": "#/$defs/CheckSource",
+      "default": "live"
+    },
+    "status": {
+      "$ref": "#/$defs/CheckStatus"
+    },
+    "verification_status": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VerificationStatus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "check",
+    "status",
+    "severity",
+    "evidence"
+  ],
+  "title": "CheckResult",
+  "type": "object"
+}

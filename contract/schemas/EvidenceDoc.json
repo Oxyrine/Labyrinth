@@ -1,0 +1,368 @@
+{
+  "$defs": {
+    "DocSource": {
+      "enum": [
+        "seller_upload",
+        "buyer_portal",
+        "erp_webhook",
+        "gstn_eway_fixture",
+        "consortium_registry"
+      ],
+      "title": "DocSource",
+      "type": "string"
+    },
+    "DocType": {
+      "enum": [
+        "invoice",
+        "purchase_order",
+        "grn",
+        "service_acceptance",
+        "contract",
+        "eway_bill",
+        "credit_note",
+        "debit_note",
+        "payment_advice"
+      ],
+      "title": "DocType",
+      "type": "string"
+    },
+    "LineItem": {
+      "additionalProperties": false,
+      "properties": {
+        "cgst_bps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cgst Bps",
+          "type": "integer"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "hsn_sac": {
+          "title": "Hsn Sac",
+          "type": "string"
+        },
+        "igst_bps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Igst Bps",
+          "type": "integer"
+        },
+        "is_service": {
+          "default": false,
+          "title": "Is Service",
+          "type": "boolean"
+        },
+        "line_no": {
+          "minimum": 1,
+          "title": "Line No",
+          "type": "integer"
+        },
+        "qty": {
+          "minimum": 0,
+          "title": "Qty",
+          "type": "integer"
+        },
+        "rate_paise": {
+          "minimum": 0,
+          "title": "Rate Paise",
+          "type": "integer"
+        },
+        "sgst_bps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Sgst Bps",
+          "type": "integer"
+        },
+        "tax_paise": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tax Paise",
+          "type": "integer"
+        },
+        "taxable_paise": {
+          "minimum": 0,
+          "title": "Taxable Paise",
+          "type": "integer"
+        },
+        "total_paise": {
+          "minimum": 0,
+          "title": "Total Paise",
+          "type": "integer"
+        },
+        "unit": {
+          "default": "NOS",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "line_no",
+        "description",
+        "hsn_sac",
+        "qty",
+        "rate_paise",
+        "taxable_paise",
+        "total_paise"
+      ],
+      "title": "LineItem",
+      "type": "object"
+    },
+    "VerificationStatus": {
+      "enum": [
+        "unverified",
+        "signature_checked",
+        "independently_confirmed"
+      ],
+      "title": "VerificationStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "buyer_id": {
+      "title": "Buyer Id",
+      "type": "string"
+    },
+    "contract_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Contract Id"
+    },
+    "distance_km": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Distance Km"
+    },
+    "doc_date": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "title": "Doc Date",
+      "type": "string"
+    },
+    "doc_id": {
+      "pattern": "^D-[A-Za-z0-9_-]+$",
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "doc_no": {
+      "title": "Doc No",
+      "type": "string"
+    },
+    "doc_type": {
+      "$ref": "#/$defs/DocType"
+    },
+    "evidence_weight": {
+      "default": 1.0,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Evidence Weight",
+      "type": "number"
+    },
+    "file_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "File Sha256"
+    },
+    "from_pincode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "From Pincode"
+    },
+    "generated_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Generated At"
+    },
+    "invoice_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Invoice Id"
+    },
+    "line_items": {
+      "items": {
+        "$ref": "#/$defs/LineItem"
+      },
+      "title": "Line Items",
+      "type": "array"
+    },
+    "milestone_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Milestone Id"
+    },
+    "payment_terms_days": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Payment Terms Days"
+    },
+    "po_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Po Id"
+    },
+    "rate_caps_paise": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Rate Caps Paise",
+      "type": "object"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seller_id": {
+      "title": "Seller Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/DocSource"
+    },
+    "to_pincode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "To Pincode"
+    },
+    "total_paise": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Total Paise",
+      "type": "integer"
+    },
+    "transporter_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Transporter Id"
+    },
+    "valid_from": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Valid From"
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Valid Until"
+    },
+    "vehicle_no": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vehicle No"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/VerificationStatus"
+    }
+  },
+  "required": [
+    "doc_id",
+    "doc_type",
+    "doc_no",
+    "doc_date",
+    "seller_id",
+    "buyer_id",
+    "source",
+    "verification_status"
+  ],
+  "title": "EvidenceDoc",
+  "type": "object"
+}

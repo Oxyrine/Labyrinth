@@ -1,0 +1,263 @@
+{
+  "$defs": {
+    "DocType": {
+      "enum": [
+        "invoice",
+        "purchase_order",
+        "grn",
+        "service_acceptance",
+        "contract",
+        "eway_bill",
+        "credit_note",
+        "debit_note",
+        "payment_advice"
+      ],
+      "title": "DocType",
+      "type": "string"
+    },
+    "LineItem": {
+      "additionalProperties": false,
+      "properties": {
+        "cgst_bps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cgst Bps",
+          "type": "integer"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "hsn_sac": {
+          "title": "Hsn Sac",
+          "type": "string"
+        },
+        "igst_bps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Igst Bps",
+          "type": "integer"
+        },
+        "is_service": {
+          "default": false,
+          "title": "Is Service",
+          "type": "boolean"
+        },
+        "line_no": {
+          "minimum": 1,
+          "title": "Line No",
+          "type": "integer"
+        },
+        "qty": {
+          "minimum": 0,
+          "title": "Qty",
+          "type": "integer"
+        },
+        "rate_paise": {
+          "minimum": 0,
+          "title": "Rate Paise",
+          "type": "integer"
+        },
+        "sgst_bps": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Sgst Bps",
+          "type": "integer"
+        },
+        "tax_paise": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Tax Paise",
+          "type": "integer"
+        },
+        "taxable_paise": {
+          "minimum": 0,
+          "title": "Taxable Paise",
+          "type": "integer"
+        },
+        "total_paise": {
+          "minimum": 0,
+          "title": "Total Paise",
+          "type": "integer"
+        },
+        "unit": {
+          "default": "NOS",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "line_no",
+        "description",
+        "hsn_sac",
+        "qty",
+        "rate_paise",
+        "taxable_paise",
+        "total_paise"
+      ],
+      "title": "LineItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "buyer_gstin": {
+      "title": "Buyer Gstin",
+      "type": "string"
+    },
+    "buyer_id": {
+      "title": "Buyer Id",
+      "type": "string"
+    },
+    "cgst_paise": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Cgst Paise",
+      "type": "integer"
+    },
+    "contract_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Contract Id"
+    },
+    "doc_type": {
+      "$ref": "#/$defs/DocType",
+      "default": "invoice"
+    },
+    "due_date": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "title": "Due Date",
+      "type": "string"
+    },
+    "financial_year": {
+      "title": "Financial Year",
+      "type": "string"
+    },
+    "grand_total_paise": {
+      "minimum": 0,
+      "title": "Grand Total Paise",
+      "type": "integer"
+    },
+    "igst_paise": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Igst Paise",
+      "type": "integer"
+    },
+    "invoice_date": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "title": "Invoice Date",
+      "type": "string"
+    },
+    "invoice_id": {
+      "pattern": "^INV-[A-Za-z0-9_-]+$",
+      "title": "Invoice Id",
+      "type": "string"
+    },
+    "invoice_no": {
+      "title": "Invoice No",
+      "type": "string"
+    },
+    "is_export_or_sez": {
+      "default": false,
+      "title": "Is Export Or Sez",
+      "type": "boolean"
+    },
+    "line_items": {
+      "items": {
+        "$ref": "#/$defs/LineItem"
+      },
+      "minItems": 1,
+      "title": "Line Items",
+      "type": "array"
+    },
+    "linked_invoice_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Linked Invoice Id"
+    },
+    "payment_terms_days": {
+      "default": 60,
+      "minimum": 0,
+      "title": "Payment Terms Days",
+      "type": "integer"
+    },
+    "place_of_supply_state": {
+      "title": "Place Of Supply State",
+      "type": "string"
+    },
+    "po_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Po Id"
+    },
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seller_gstin": {
+      "title": "Seller Gstin",
+      "type": "string"
+    },
+    "seller_id": {
+      "title": "Seller Id",
+      "type": "string"
+    },
+    "sgst_paise": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Sgst Paise",
+      "type": "integer"
+    },
+    "subtotal_paise": {
+      "minimum": 0,
+      "title": "Subtotal Paise",
+      "type": "integer"
+    },
+    "total_tax_paise": {
+      "minimum": 0,
+      "title": "Total Tax Paise",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "invoice_id",
+    "invoice_no",
+    "financial_year",
+    "invoice_date",
+    "due_date",
+    "seller_id",
+    "seller_gstin",
+    "buyer_id",
+    "buyer_gstin",
+    "place_of_supply_state",
+    "line_items",
+    "subtotal_paise",
+    "total_tax_paise",
+    "grand_total_paise"
+  ],
+  "title": "Invoice",
+  "type": "object"
+}
