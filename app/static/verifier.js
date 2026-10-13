@@ -81,9 +81,7 @@
   function verifyCurrentTarget() {
     var sel = document.getElementById("audit-target-select");
     var target = sel ? sel.value : "D-PO-0001";
-    return UI.apiFetch("/audit/verify/" + encodeURIComponent(target), {
-      roleOverride: "auditor:AUD-1",
-    }).then(function (proof) {
+    return UI.apiFetch("/audit/verify/" + encodeURIComponent(target)).then(function (proof) {
       renderAuditVerification(proof);
       return proof;
     });

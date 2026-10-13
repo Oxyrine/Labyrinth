@@ -157,7 +157,7 @@
     fd.append("file", file);
     fd.append("case_id", $("seller-fixture-select").value || "clean_goods");
     fd.append("attach", attachedKeys());
-    UI.apiFetch("/requests", { method: "POST", body: fd, roleOverride: "seller:P-0001" })
+    UI.apiFetch("/requests", { method: "POST", body: fd })
       .then(function (card) {
         renderSellerPreview(card);
         var outcome = UI.outcomeLabel(card.decision.outcome);

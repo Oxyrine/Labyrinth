@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Yellowtail&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="app.css?v=20261013-3">
+  <link rel="stylesheet" href="app.css?v=20261013-4">
 </head>
 <body>
   <a href="#main-workspace" class="skip-link">Skip to main workspace</a>
@@ -39,7 +39,7 @@
     </div>
     <div class="topbar-right">
       <div class="connection-pill" id="connection-badge"><span class="status-dot" id="connection-dot"></span><span id="connection-text">Connecting</span></div>
-      <label class="role-selector-wrap" for="role-switcher"><span class="role-label">Demo role</span><select id="role-switcher" class="role-select" aria-label="Switch active role token">
+      <label class="role-selector-wrap" for="role-switcher"><span class="role-label" title="Pick who you are acting as. Each action only works for the role that owns it.">Acting as</span><select id="role-switcher" class="role-select" aria-label="Switch active role token">
         <option value="lender:L1">Lender · Consortium Bank L1</option>
         <option value="lender:L2">Lender · Consortium Bank L2</option>
         <option value="seller:P-0001">Seller · Sahyadri Castings (P-0001)</option>
@@ -86,6 +86,7 @@
   </section>
   <main id="main-workspace" class="main-workspace" tabindex="-1">
     <div class="page-heading"><div><div class="eyebrow">TRADE FINANCE, WITH CLARITY</div><h2 class="page-title" id="page-title">Financing workspace<span>.</span></h2><p id="page-description">A clear view of every invoice, every check, and your next decision.</p></div><button type="button" class="btn btn-primary new-invoice-btn" id="new-invoice-btn"><span aria-hidden="true">+</span> New invoice</button></div>
+    <div id="role-toast" class="role-toast hidden" role="status" aria-live="polite"><span id="role-toast-text"></span> <button type="button" id="role-toast-switch" class="btn btn-sm btn-primary"></button> <button type="button" id="role-toast-close" class="btn btn-sm btn-ghost" aria-label="Dismiss">✕</button></div>
     <div id="workspace-error" class="status-banner error hidden" role="alert"></div>
 
     <!-- TAB 1: SELLER UPLOAD -->
@@ -135,7 +136,7 @@
           </fieldset>
 
           <div class="action-bar">
-            <button type="button" id="seller-submit-btn" class="btn btn-primary" disabled>Extract and submit</button>
+            <button type="button" id="seller-submit-btn" data-roles="seller lender reviewer" class="btn btn-primary" disabled>Extract and submit</button>
             <button type="button" id="seller-sample-open-btn" class="btn btn-ghost">Open the sample scenario instead</button>
           </div>
           <div id="seller-status-msg" class="status-banner hidden" role="status" aria-live="polite"></div>
@@ -177,8 +178,8 @@
 
         </div>
         <div class="toolbar-right">
-          <button type="button" id="lender-accept-btn" class="btn btn-secondary">Record buyer acceptance</button>
-          <button type="button" id="lender-confirm-btn" class="btn btn-primary">Confirm financing →</button>
+          <button type="button" id="lender-accept-btn" data-roles="buyer" class="btn btn-secondary">Record buyer acceptance</button>
+          <button type="button" id="lender-confirm-btn" data-roles="lender" class="btn btn-primary">Confirm financing →</button>
         </div>
       </div>
 
@@ -294,7 +295,7 @@
               Fire two simultaneous reservation requests from Consortium Bank L1 and Bank L2 on the exact same invoice identity to verify atomic single-winner exclusivity.
             </p>
             <div class="action-bar">
-              <button type="button" id="trigger-race-btn" class="btn btn-primary">Run simultaneous reservations</button>
+              <button type="button" id="trigger-race-btn" data-roles="lender reviewer auditor" class="btn btn-primary">Run simultaneous reservations</button>
               <button type="button" id="inspect-settled-btn" class="btn btn-secondary">Inspect a settled invoice</button>
             </div>
             <div id="race-result-box" class="race-result-box"></div>
@@ -335,7 +336,7 @@
               <input type="text" id="override-reason" class="input-text" placeholder="What did you check, and why does it change the decision?" required>
             </div>
             <div class="action-bar">
-              <button type="button" id="submit-override-btn" class="btn btn-primary">Record Audited Override</button>
+              <button type="button" id="submit-override-btn" data-roles="reviewer" class="btn btn-primary">Record Audited Override</button>
             </div>
             <div id="override-feedback" class="status-banner hidden" role="status"></div>
           </div>
@@ -463,14 +464,14 @@
   <footer class="workspace-footer"><span><span class="footer-dot"></span> Labyrinth · Verify. Decide. Trace.</span><span>Demo evidence · Illustrative pricing · Simulated anchoring unless configured</span></footer></main>
   </div>
 
-  <script src="data.js?v=20261013-3"></script>
-  <script src="ring.js?v=20261013-3"></script>
-  <script src="workspace.js?v=20261013-3"></script>
-  <script src="seller.js?v=20261013-3"></script>
-  <script src="lender.js?v=20261013-3"></script>
-  <script src="queue.js?v=20261013-3"></script>
-  <script src="verifier.js?v=20261013-3"></script>
-  <script src="tour.js?v=20261013-3"></script>
-  <script src="landing.js?v=20261013-3"></script>
+  <script src="data.js?v=20261013-4"></script>
+  <script src="ring.js?v=20261013-4"></script>
+  <script src="workspace.js?v=20261013-4"></script>
+  <script src="seller.js?v=20261013-4"></script>
+  <script src="lender.js?v=20261013-4"></script>
+  <script src="queue.js?v=20261013-4"></script>
+  <script src="verifier.js?v=20261013-4"></script>
+  <script src="tour.js?v=20261013-4"></script>
+  <script src="landing.js?v=20261013-4"></script>
 </body>
 </html>

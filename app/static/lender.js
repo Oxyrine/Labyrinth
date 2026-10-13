@@ -360,7 +360,6 @@
         var reqId = (currentCard && currentCard.request_id) || currentCaseId;
         UI.apiFetch("/requests/" + encodeURIComponent(reqId) + "/accept", {
           method: "POST",
-          roleOverride: "buyer:P-0002",
           jsonBody: {
             decision: "accept",
           },
@@ -384,10 +383,9 @@
         var reqId = (currentCard && currentCard.request_id) || currentCaseId;
         UI.apiFetch("/reservations/confirm", {
           method: "POST",
-          roleOverride: "lender:L1",
           jsonBody: {
             request_id: reqId,
-            lender_id: "L1",
+            lender_id: (UI.getActiveRoleToken().split(":")[1] || "L1"),
             disburse: true,
           },
         })

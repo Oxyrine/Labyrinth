@@ -74,6 +74,7 @@
   function renderRaceResult(res) {
     var box = document.getElementById("race-result-box");
     UI.clear(box);
+    if (res.error) { box.appendChild(UI.el("p", { text: "The race did not run: " + res.error })); return; }
     var winnerId = (res.winner && res.winner.lender_id) || "L1";
     var winnerResId = (res.winner && res.winner.reservation_id) || "RSV-RACE-L1";
     var loserId = (res.loser && res.loser.lender_id) || "L2";
@@ -127,6 +128,8 @@
           jsonBody: { case_id: "concurrent_reservation" },
         }).then(function (res) {
           renderRaceResult(res);
+        }).catch(function (err) {
+          renderRaceResult({ error: err.message });
         });
       });
     }
@@ -157,7 +160,6 @@
 
         UI.apiFetch("/overrides", {
           method: "POST",
-          roleOverride: "reviewer:" + (rev1 || "REV-1"),
           jsonBody: {
             case_id: cid,
             new_outcome: newOut,
@@ -198,6 +200,8 @@
       }).then(function (res) {
         renderRaceResult(res);
         return res;
+      }).catch(function (err) {
+        renderRaceResult({ error: err.message });
       });
     },
   };

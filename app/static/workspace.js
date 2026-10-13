@@ -87,7 +87,46 @@
     text("page-description",copy[2]);
     document.getElementById("new-invoice-btn").classList.toggle("hidden",name === "seller");
   }
+
+  /* The role picker is real: every action belongs to a role, and the server refuses the wrong one. */
+  var ROLE_TOKENS = {seller:"seller:P-0001", buyer:"buyer:P-0002", lender:"lender:L1", reviewer:"reviewer:REV-1", auditor:"auditor:AUD-1"};
+  var ROLE_NAMES = {seller:"Seller", buyer:"Buyer", lender:"Lender", reviewer:"Reviewer", auditor:"Auditor"};
+  function currentRole() { return UI.getActiveRoleToken().split(":")[0]; }
+  function applyRole() {
+    var role = currentRole(), actor = UI.getActiveRoleToken().split(":")[1] || "";
+    document.querySelectorAll("[data-roles]").forEach(function (b) {
+      var ok = b.dataset.roles.split(" ").indexOf(role) !== -1;
+      b.classList.toggle("role-locked", !ok);
+      b.title = ok ? "" : "This is a " + ROLE_NAMES[b.dataset.roles.split(" ")[0]].toLowerCase() + " action. Click to switch role.";
+    });
+    if (role === "reviewer") {
+      var r1 = document.getElementById("override-reviewer1"), r2 = document.getElementById("override-reviewer2");
+      if (r1) r1.value = actor; if (r2) r2.value = actor === "REV-1" ? "REV-2" : "REV-1";
+    }
+    document.getElementById("role-toast").classList.add("hidden");
+  }
+  function guardRole(e) {
+    var b = e.target.closest && e.target.closest("[data-roles]");
+    if (!b || b.disabled) return;
+    var allowed = b.dataset.roles.split(" ");
+    if (allowed.indexOf(currentRole()) !== -1) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    var need = allowed[0];
+    text("role-toast-text", "You are acting as " + ROLE_NAMES[currentRole()] + ". This step belongs to the " + ROLE_NAMES[need] + ".");
+    var sw = document.getElementById("role-toast-switch");
+    sw.textContent = "Switch to " + ROLE_NAMES[need] + " and continue";
+    sw.onclick = function () {
+      document.getElementById("role-switcher").value = ROLE_TOKENS[need];
+      applyRole();
+      b.click();
+    };
+    document.getElementById("role-toast").classList.remove("hidden");
+  }
   document.addEventListener("DOMContentLoaded",function() {
+    document.addEventListener("click",guardRole,true);
+    document.getElementById("role-switcher").addEventListener("change",applyRole);
+    document.getElementById("role-toast-close").addEventListener("click",function(){document.getElementById("role-toast").classList.add("hidden");});
+    applyRole();
     document.getElementById("new-invoice-btn").addEventListener("click",function(){UI.switchTab("seller");});
     document.querySelector(".brand-cluster").addEventListener("click",function(e){e.preventDefault();if(window.LabyrinthLanding)window.LabyrinthLanding.show();else UI.switchTab("lender");});
     document.getElementById("request-search").addEventListener("input",function(e){query=e.target.value.trim().toLowerCase();renderRequests();});

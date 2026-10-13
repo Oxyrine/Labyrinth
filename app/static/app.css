@@ -486,3 +486,8 @@ legend { padding:0; }
 #queue-table-wrap .data-table th,#queue-table-wrap .data-table td { white-space:nowrap; }
 #queue-table-wrap .data-table td:nth-child(2) { white-space:normal; min-width:220px; text-transform:capitalize; }
 @media (max-width:1100px) { #panel-queue .stack-col { grid-template-columns:1fr; } }
+
+/* role picker: actions owned by another role look dimmed and offer to switch */
+.role-locked:not(:disabled) { opacity:.55; }
+.role-toast { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:11px 14px; margin-bottom:16px; background:var(--amber-dim); border:1px solid rgba(200,145,47,.45); border-radius:4px; font-size:12.5px; }
+.role-toast span { flex:1 1 260px; }
