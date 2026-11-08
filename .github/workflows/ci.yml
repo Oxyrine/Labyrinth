@@ -24,7 +24,7 @@ jobs:
       - name: Validate contract schemas and artifacts
         run: python contract/validate.py --export-schemas
       - name: Run fast test suite
-        run: pytest -q -m "not slow"
+        run: python -m pytest -q -m "not slow"
       - name: Verify world JSON determinism
         run: |
           python run.py world --regime A --json-only
